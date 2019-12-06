@@ -16,8 +16,10 @@ screen = pygame.display.set_mode(size)
 # Load the fonts
 font_40 = pygame.font.SysFont("Arial", 40, True, False)
 font_30 = pygame.font.SysFont("Arial", 30, True, False)
+font_10 = pygame.font.SysFont("Arial", 10, True, False)
 text_title = font_40.render("Dino Jump", True, BLACK)
 text_ins = font_30.render("Click to Play!", True, BLACK)
+name_tag = font_10.render("Sasoun Torossian", True, BLACK)
 pygame.display.set_caption("Dino Jump")
 
 # Used to manage how fast the screen updates
@@ -25,48 +27,47 @@ clock = pygame.time.Clock()
 
 # Loop until the user clicks the close button.
 done = False
-
 collision = True
+jump_flag = False
 
 # Store the score
 score = 0
 
 
-# # Store speeding up mechanic
+# # Store speeding up mechanic (Needs to be implemented much later)
 # cactus_speed = [4, 9]
 # score_speed_threshold = 50
 
+class Dinosaur:
+    def __init__(self, x=0, y=180, dx=4, dy=4, width=40, height=40, color=BLACK):
+        self.image = ""
+        self.x = x
+        self.y = y
+        self.dx = dx
+        self.dy = dy
+        self.width = width
+        self.height = height
+        self.color = color
 
-# class Dinosaur:
-#     def __init__(self, x=0, y=0, dx=4, dy=4, width=40, height=40, color=RED):
-#         self.image = ""
-#         self.x = x
-#         self.y = y
-#         self.dx = dx
-#         self.dy = dy
-#         self.width = width
-#         self.height = height
-#         self.color = color
-#
-#     def load_image(self, img):
-#         self.image = pygame.image.load(img).convert()
-#         self.image.set_colorkey(BLACK)
-#
-#     def draw_image(self):
-#         screen.blit(self.image, [self.x, self.y])
-#
-#     def move_x(self):
-#         self.x += self.dx
-#
-#     def move_y(self):
-#         self.y += self.dy
-#
-#     def draw_rect(self):
-#         pygame.draw.rect(screen, self.color, [self.x, self.y, self.width, self.height], 0)
-#
-#     def check_out_of_screen(self):
-#         if self.x + self.width > 400 or self.x < 0:
-#             self.x -= self.dx
+    def load_image(self, img):
+        self.image = pygame.image.load(img).convert()
+        self.image.set_colorkey(BLACK)
+
+    def draw_image(self):
+        screen.blit(self.image, [self.x, self.y])
+
+    def move_x(self):
+        self.x += self.dx
+
+    def move_y(self):
+        self.y += self.dy
+
+    def draw_rect(self):
+        pygame.draw.rect(screen, self.color, [self.x, self.y, self.width, self.height], 0)
+
+    def check_out_of_screen(self):
+        if self.x + self.width > 400 or self.x < 0:
+            self.x -= self.dx
 
 
 class Cactus:
@@ -114,21 +115,77 @@ def draw_main_menu():
     score_text = font_40.render("Score: " + str(score), True, BLACK)
     screen.blit(score_text, [size[0] / 2 - 70, size[1] / 2 - 30])
     screen.blit(text_ins, [size[0] / 2 - 85, size[1] / 2 + 40])
+    screen.blit(name_tag, [size[0] / 2 - 300, size[1] / 2 + 135])
     pygame.display.flip()
 
 
 # Create a player object
-# player = Dinosaur(175, 475, 0, 0, 90, 50, GRAY)
+player = Dinosaur(20, 180, 0, 0, 30, 40, BLACK)
 # player.load_image("player_mod.png")
 
 
-# Setup the enemy cactus
+def jump_dino():
+    for i in range(-7, 0, 1):
+        player.dy = i
+        player.move_y()
+        player.draw_rect()
+        pygame.time.delay(10)
+        # move_cactus()
+
+    # player.dy = -7
+    # player.move_y()
+    # player.draw_rect()
+    # move_cactus()
+    # pygame.time.delay(1000)
+    # player.dy = -6
+    # player.move_y()
+    # player.draw_rect()
+    # move_cactus()
+    # pygame.time.delay(1000)
+    # player.dy = -5
+    # player.move_y()
+    # player.draw_rect()
+    # move_cactus()
+    # pygame.time.delay(1000)
+    # player.dy = -4
+    # player.move_y()
+    # player.draw_rect()
+    # move_cactus()
+    # pygame.time.delay(1000)
+    # player.dy = -3
+    # player.move_y()
+    # player.draw_rect()
+    # move_cactus()
+    # pygame.time.delay(1000)
+    # player.dy = -2
+    # player.move_y()
+    # player.draw_rect()
+    # move_cactus()
+    # pygame.time.delay(1000)
+    # player.dy = -1
+    # player.move_y()
+    # player.draw_rect()
+    # move_cactus()
+    # pygame.time.delay(1000)
+
+
+    # for j in range(1, 8, 1):
+    #     player.dy = j
+    #     player.move_y()
+    #     player.draw_rect()
+    #     move_cactus()
+    #     # pygame.time.delay(10)
+
+
+# Setup the enemy cactus (PUT IN FUNC)
 cactus = []
 cactus_count = 3
 for i in range(cactus_count):
-    car = Cactus(600, 180, -4, 0, 30, 40, BLACK)
-    cactus.append(car)
+    cacti = Cactus(600, 180, -4, 0, 30, 40, BLACK)
+    cactus.append(cacti)
 
+
+# Figure out better way to set cactus position
 def set_cactus_position():
     cactus[0].x = random.randrange(600, 650)
     for i in range(1, cactus_count):
@@ -145,14 +202,16 @@ def move_cactus():
     for i in range(cactus_count):
         cactus[i].draw_rect()
         cactus[i].move_x()
+        # Should implement  def check_out_of_screen(self) perhaps?
         if cactus[i].x < 0:
             cactus[i].y = 180
             cactus[i].x = random.randrange(600, 800)
 
 
 # -------- Main Program Loop -----------
-while not done:
 
+jumps = -10
+while not done:
     # --- Main event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -172,14 +231,17 @@ while not done:
 
             pygame.mouse.set_visible(False)
 
-        # if not collision:
-        #     if event.type == pygame.KEYDOWN:
-        #         if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
-        #             player.dx = 4
-        #
-        #     if event.type == pygame.KEYUP:
-        #         if event.key == pygame.K_UP or or event.key == pygame.K_SPACE:
-        #             player.dx = 0
+        if not collision:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
+                    # player.dy = -4
+                    jump_flag = True
+                    # jump_dino()
+
+            # if event.type == pygame.KEYUP:
+            #     if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
+            #         player.dy = 0
+            #         jump_dino()
 
     # Screen-clearing code goes here
     screen.fill(GRAY)
@@ -192,23 +254,35 @@ while not done:
         # player.move_y()
         # player.check_out_of_screen()
 
-        # cactus_onscreen = random.randint(1, 3)
-        # Generate cactus.
-        # for i in range(cactus_count):
-
-        # cactus[0].draw_rect()
-        # cactus[0].move_x()
-        # if cactus[0].x < 0:
-        #     cactus[0].y = 180
-        #     cactus[0].x = 600
-        #
-        # cactus[1].draw_rect()
-        # cactus[1].move_x()
-        # if cactus[1].x < 0:
-        #     cactus[1].y = 180
-        #     cactus[1].x = 600
+        if jump_flag:
+            if jumps < 0:
+                print("jumps < 0")
+                player.dy = jumps
+                player.move_y()
+                player.draw_rect()
+                pygame.time.delay(20)
+                jumps += 1
+            elif 0 <= jumps < 60:
+                print("jumps >= 0")
+                player.dy = jumps
+                player.move_y()
+                player.draw_rect()
+                pygame.time.delay(20)
+                jumps += 1
+            elif jumps >= 60:
+                print("jumps > 60")
+                player.dy = 0
+                player.move_y()
+                player.draw_rect()
+                pygame.time.delay(20)
+                jump_flag = False
+            else:
+                jump_flag = False
+        else:
+            player.draw_rect()
 
         move_cactus()
+        player.check_out_of_screen()
 
         # # Check the collision of the player with the cactus
         # for i in range(cactus_count):
