@@ -284,6 +284,7 @@ while not done:
 
         pygame.display.flip()
     else:
+        print("Game Over")
         draw_main_menu()
 
     # --- Limit to 60 frames per second
