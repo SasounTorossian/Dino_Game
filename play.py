@@ -29,6 +29,7 @@ clock = pygame.time.Clock()
 done = False
 collision = True
 jump_flag = False
+jump_acc = -13
 
 # Store the score
 score = 0
@@ -124,57 +125,39 @@ player = Dinosaur(20, 180, 0, 0, 30, 40, BLACK)
 # player.load_image("player_mod.png")
 
 
-def jump_dino():
-    for i in range(-7, 0, 1):
-        player.dy = i
-        player.move_y()
-        player.draw_rect()
-        pygame.time.delay(10)
+# def jump_dino():
+#     jump_acc = -10
+#     jump = True
+#     while jump:
+#         if jump_acc < 0:
+#             print("jumps < 0")
+#             player.dy = jump_acc
+#             player.move_y()
+#             player.draw_rect()
+#             pygame.time.delay(20)
+#             jump_acc += 1
+#             move_cactus()
+#         elif 0 <= jump_acc <= 10:
+#             print("jumps >= 0")
+#             player.dy = jump_acc
+#             player.move_y()
+#             player.draw_rect()
+#             pygame.time.delay(20)
+#             jump_acc += 1
+#             move_cactus()
+#         elif jump_acc > 10:
+#             print("jumps > 10")
+#             player.dy = 0
+#             player.move_y()
+#             player.draw_rect()
+#             pygame.time.delay(20)
+#             move_cactus()
+#             jump = False
+        # jump_acc = -10
+    # else:
+        # jump_flag = False
+        # jump_acc = -10
         # move_cactus()
-
-    # player.dy = -7
-    # player.move_y()
-    # player.draw_rect()
-    # move_cactus()
-    # pygame.time.delay(1000)
-    # player.dy = -6
-    # player.move_y()
-    # player.draw_rect()
-    # move_cactus()
-    # pygame.time.delay(1000)
-    # player.dy = -5
-    # player.move_y()
-    # player.draw_rect()
-    # move_cactus()
-    # pygame.time.delay(1000)
-    # player.dy = -4
-    # player.move_y()
-    # player.draw_rect()
-    # move_cactus()
-    # pygame.time.delay(1000)
-    # player.dy = -3
-    # player.move_y()
-    # player.draw_rect()
-    # move_cactus()
-    # pygame.time.delay(1000)
-    # player.dy = -2
-    # player.move_y()
-    # player.draw_rect()
-    # move_cactus()
-    # pygame.time.delay(1000)
-    # player.dy = -1
-    # player.move_y()
-    # player.draw_rect()
-    # move_cactus()
-    # pygame.time.delay(1000)
-
-
-    # for j in range(1, 8, 1):
-    #     player.dy = j
-    #     player.move_y()
-    #     player.draw_rect()
-    #     move_cactus()
-    #     # pygame.time.delay(10)
 
 
 # Setup the enemy cactus (PUT IN FUNC)
@@ -210,7 +193,6 @@ def move_cactus():
 
 # -------- Main Program Loop -----------
 
-jumps = -10
 while not done:
     # --- Main event loop
     for event in pygame.event.get():
@@ -235,6 +217,7 @@ while not done:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
                     # player.dy = -4
+                    print("jump_flag = True")
                     jump_flag = True
                     # jump_dino()
 
@@ -255,32 +238,35 @@ while not done:
         # player.check_out_of_screen()
 
         if jump_flag:
-            if jumps < 0:
+            if jump_acc < 0:
                 print("jumps < 0")
-                player.dy = jumps
+                player.dy = jump_acc
                 player.move_y()
                 player.draw_rect()
                 pygame.time.delay(20)
-                jumps += 1
-            elif 0 <= jumps < 60:
+                jump_acc += 1
+            elif 0 <= jump_acc <= 13:
                 print("jumps >= 0")
-                player.dy = jumps
+                player.dy = jump_acc
                 player.move_y()
                 player.draw_rect()
                 pygame.time.delay(20)
-                jumps += 1
-            elif jumps >= 60:
-                print("jumps > 60")
+                jump_acc += 1
+            elif jump_acc > 13:
+                print("jumps > 13")
                 player.dy = 0
                 player.move_y()
                 player.draw_rect()
                 pygame.time.delay(20)
                 jump_flag = False
+                jump_acc = -13
             else:
                 jump_flag = False
+                jump_acc = -13
         else:
             player.draw_rect()
 
+        player.draw_rect()
         move_cactus()
         player.check_out_of_screen()
 
