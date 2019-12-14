@@ -103,12 +103,12 @@ class Cactus:
             self.x -= self.dx
 
 
-# def check_collision(player_x, player_y, player_width, player_height, cac_x, cac_y, cac_width, cac_height):
-#     if (player_x + player_width > cac_x) and (player_x < cac_x + cac_width) and (player_y < cac_y + cac_height) and (
-#             player_y + player_height > cac_y):
-#         return True
-#     else:
-#         return False
+def check_collision(player_x, player_y, player_width, player_height, cac_x, cac_y, cac_width, cac_height):
+    if (player_x + player_width > cac_x) and (player_x < cac_x + cac_width) and (player_y < cac_y + cac_height) and (
+            player_y + player_height > cac_y):
+        return True
+    else:
+        return False
 
 
 def draw_main_menu():
@@ -266,17 +266,17 @@ while not done:
         else:
             player.draw_rect()
 
-        player.draw_rect()
+        # player.draw_rect()
         move_cactus()
-        player.check_out_of_screen()
+        # player.check_out_of_screen()
 
         # # Check the collision of the player with the cactus
-        # for i in range(cactus_count):
-        #     if check_collision(player.x, player.y, player.width, player.height, cactus[i].x, cactus[i].y, cactus[i].width,
-        #                        cactus[i].height):
-        #         collision = True
-        #         pygame.mouse.set_visible(True)
-        #         break
+        for i in range(cactus_count):
+            if check_collision(player.x, player.y, player.width, player.height,
+                               cactus[i].x, cactus[i].y, cactus[i].width, cactus[i].height):
+                collision = True
+                pygame.mouse.set_visible(True)
+                break
 
         # Draw the score.
         txt_score = font_30.render("Score: " + str(score), True, WHITE)
