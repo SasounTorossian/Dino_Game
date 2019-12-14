@@ -5,6 +5,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/play.py" beforeDir="false" afterPath="$PROJECT_DIR$/play.py" afterDir="false" />
     </list>
+    <list id="8189c4da-2840-437b-90be-32193c8f4c08" name="New Branch Test" comment="" />
+    <list id="892f7117-cc93-46ee-bf3f-625083d2b8f6" name="Revert &quot;New Branch Test&quot;" comment="Revert &quot;New Branch Test&quot;&#10;&#10;This reverts commit e9ada6ef">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,13 +22,46 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="e9ada6ef6c46885a2e998f3d582758d009ada70e" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="hiddenUrls">
+      <set>
+        <option value="https://github.com/SasounTorossian/Dino_Game.git" />
+      </set>
+    </option>
+  </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/.idea/workspace.xml">
+      <ranges>
+        <range start1="7" end1="7" start2="7" end2="11" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+        <range start1="20" end1="20" start2="24" end2="29" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+        <range start1="23" end1="23" start2="32" end2="59" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+        <range start1="25" end1="25" start2="61" end2="66" changelist="892f7117-cc93-46ee-bf3f-625083d2b8f6" />
+        <range start1="27" end1="27" start2="68" end2="69" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+        <range start1="55" end1="55" start2="97" end2="100" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+        <range start1="88" end1="89" start2="133" end2="148" changelist="892f7117-cc93-46ee-bf3f-625083d2b8f6" />
+        <range start1="106" end1="107" start2="165" end2="167" changelist="892f7117-cc93-46ee-bf3f-625083d2b8f6" />
+        <range start1="109" end1="110" start2="169" end2="170" changelist="892f7117-cc93-46ee-bf3f-625083d2b8f6" />
+        <range start1="112" end1="114" start2="172" end2="174" changelist="892f7117-cc93-46ee-bf3f-625083d2b8f6" />
+        <range start1="116" end1="118" start2="176" end2="186" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+        <range start1="120" end1="122" start2="188" end2="190" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+        <range start1="124" end1="126" start2="192" end2="194" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+        <range start1="128" end1="129" start2="196" end2="201" changelist="45766a9b-4c9c-4e44-82e8-3322d09da087" />
+      </ranges>
+    </file>
   </component>
   <component name="ProjectId" id="1Ohclsy0fogkBaKyPeAT3YiTd9X" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TODO_SCOPE" value="All Places" />
     <property name="last_opened_file_path" value="C:/Program Files/Git/cmd/git.exe" />
     <property name="settings.editor.selected.configurable" value="settings.github" />
   </component>
@@ -52,6 +89,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.play" />
+        <item itemvalue="Python.play" />
+        <item itemvalue="Python.play" />
         <item itemvalue="Python.play" />
       </list>
     </recent_temporary>
@@ -114,18 +154,30 @@
     <state width="1515" height="140" key="GridCell.Tab.0.bottom" timestamp="1576339708150">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="140" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1576339708150" />
-    <state width="1515" height="140" key="GridCell.Tab.0.center" timestamp="1576339708150">
+    <state x="93" y="93" width="1350" height="638" key="DiffContextDialog/0.0.1536.824@0.0.1536.824" timestamp="1576340113310" />
+    <state width="1515" height="140" key="GridCell.Tab.0.bottom" timestamp="1576365304017">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="140" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1576339708150" />
-    <state width="1515" height="140" key="GridCell.Tab.0.left" timestamp="1576339708150">
+    <state width="1515" height="140" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1576365304017" />
+    <state width="1515" height="140" key="GridCell.Tab.0.center" timestamp="1576365304016">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="140" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1576339708150" />
-    <state width="1515" height="140" key="GridCell.Tab.0.right" timestamp="1576339708150">
+    <state width="1515" height="140" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1576365304016" />
+    <state width="1515" height="140" key="GridCell.Tab.0.left" timestamp="1576365304016">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="140" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1576339708150" />
+    <state width="1515" height="140" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1576365304016" />
+    <state width="1515" height="140" key="GridCell.Tab.0.right" timestamp="1576365304017">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1515" height="140" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1576365304017" />
+    <state x="618" y="328" key="VCS.ChangelistChooser" timestamp="1576340680118">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="618" y="328" key="VCS.ChangelistChooser/0.0.1536.824@0.0.1536.824" timestamp="1576340680118" />
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1576340693403">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1576340693403" />
   </component>
 </project>

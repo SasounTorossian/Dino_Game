@@ -27,7 +27,8 @@ clock = pygame.time.Clock()
 
 # Loop until the user clicks the close button.
 done = False
-collision = True
+collision = False
+first_run = True
 jump_flag = False
 jump_acc = -13
 
@@ -38,6 +39,7 @@ score = 0
 # # Store speeding up mechanic (Needs to be implemented much later)
 # cactus_speed = [4, 9]
 # score_speed_threshold = 50
+
 
 class Dinosaur:
     def __init__(self, x=0, y=180, dx=4, dy=4, width=40, height=40, color=BLACK):
@@ -103,12 +105,34 @@ class Cactus:
             self.x -= self.dx
 
 
-def check_collision(player_x, player_y, player_width, player_height, cac_x, cac_y, cac_width, cac_height):
-    if (player_x + player_width > cac_x) and (player_x < cac_x + cac_width) and (player_y < cac_y + cac_height) and (
-            player_y + player_height > cac_y):
-        return True
-    else:
-        return False
+# add global variables in game engine creation
+class GameEngine:
+    def __init__(self):
+        print("Created Engine")
+
+    @staticmethod
+    def check_collision(player, cactus):
+        collision_flag = False
+        for j in range(cactus_count):
+            if (player.x + player.width > cactus[j].x) and (player.x < cactus[j].x + cactus[j].width) and \
+                    (player.y < cactus[j].y + cactus[j].height) and (player.y + player.height > cactus[j].y):
+                collision_flag = True
+                break
+            else:
+                collision_flag = False
+        return collision_flag
+
+
+engine = GameEngine()
+
+
+# def check_collision(player_x, player_y, player_width, player_height, cac_x, cac_y, cac_width, cac_height):
+#     if (player_x + player_width > cac_x) and (player_x < cac_x + cac_width) and (
+#             player_y < cac_y + cac_height) and (
+#             player_y + player_height > cac_y):
+#         return True
+#     else:
+#         return False
 
 
 def draw_main_menu():
@@ -153,11 +177,11 @@ player = Dinosaur(20, 180, 0, 0, 30, 40, BLACK)
 #             pygame.time.delay(20)
 #             move_cactus()
 #             jump = False
-        # jump_acc = -10
-    # else:
-        # jump_flag = False
-        # jump_acc = -10
-        # move_cactus()
+# jump_acc = -10
+# else:
+# jump_flag = False
+# jump_acc = -10
+# move_cactus()
 
 
 # Setup the enemy cactus (PUT IN FUNC)
@@ -194,50 +218,44 @@ def move_cactus():
 # -------- Main Program Loop -----------
 
 while not done:
-    # --- Main event loop
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-
-        # Reset everything when the user starts the game.
-        if collision and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN):
-            collision = False
-            set_cactus_position()
-            # for i in range(cactus_count):
-            #     cactus[i].y = 180
-            #     cactus[i].x = 600
-            # player.x = 175
-            # player.dx = 0
-            # player.dy = 0
-            # score = 0
-
-            pygame.mouse.set_visible(False)
-
-        if not collision:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
-                    # player.dy = -4
-                    print("jump_flag = True")
-                    jump_flag = True
-                    # jump_dino()
-
-            # if event.type == pygame.KEYUP:
-            #     if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
-            #         player.dy = 0
-            #         jump_dino()
-
     # Screen-clearing code goes here
     screen.fill(GRAY)
+    # --- Limit to 60 frames per second
+    clock.tick(60)
 
-    # Drawing code should go here
-    if not collision:
+    if first_run or collision:
+        pygame.mouse.set_visible(True)
+        draw_main_menu()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+            # Reset everything when the user starts the game.
+            if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
+                set_cactus_position()
+                pygame.mouse.set_visible(False)
+                first_run = False
+                collision = False
+    else:
         pygame.draw.line(screen, BLACK, (0, 200), (600, 200))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
 
-        # player.draw_image()
-        # player.move_y()
-        # player.check_out_of_screen()
+            if event.type == pygame.KEYDOWN and (event.key == pygame.K_UP or event.key == pygame.K_SPACE):
+                print("jump_flag = True")
+                jump_flag = True
 
         if jump_flag:
+            # for i in range(-13, 14):
+            #     print(f"jumps_acc = {i}")
+            #     player.dy = i
+            #     player.move_y()
+            #     player.draw_rect()
+            #     pygame.time.delay(20)
+            #     move_cactus()
+            # player.dy = 0
+            # jump_flag = False
+
             if jump_acc < 0:
                 print("jumps < 0")
                 player.dy = jump_acc
@@ -245,6 +263,7 @@ while not done:
                 player.draw_rect()
                 pygame.time.delay(20)
                 jump_acc += 1
+                move_cactus()
             elif 0 <= jump_acc <= 13:
                 print("jumps >= 0")
                 player.dy = jump_acc
@@ -252,6 +271,7 @@ while not done:
                 player.draw_rect()
                 pygame.time.delay(20)
                 jump_acc += 1
+                move_cactus()
             elif jump_acc > 13:
                 print("jumps > 13")
                 player.dy = 0
@@ -260,35 +280,37 @@ while not done:
                 pygame.time.delay(20)
                 jump_flag = False
                 jump_acc = -13
+                move_cactus()
             else:
                 jump_flag = False
                 jump_acc = -13
         else:
             player.draw_rect()
+            move_cactus()
 
-        # player.draw_rect()
-        move_cactus()
-        # player.check_out_of_screen()
+            # player.draw_rect()
+            # move_cactus()
+            # player.check_out_of_screen()
 
-        # # Check the collision of the player with the cactus
-        for i in range(cactus_count):
-            if check_collision(player.x, player.y, player.width, player.height,
-                               cactus[i].x, cactus[i].y, cactus[i].width, cactus[i].height):
-                collision = True
-                pygame.mouse.set_visible(True)
-                break
+        # Check the collision of the player with the cactus
+        collision = engine.check_collision(player, cactus)
+        # print("checking collision")
+        # for i in range(cactus_count):
+        #     if check_collision(player.x, player.y, player.width, player.height,
+        #                        cactus[i].x, cactus[i].y, cactus[i].width, cactus[i].height):
+        #         print("collision")
+        #         collision = True
+        #         break
 
         # Draw the score.
         txt_score = font_30.render("Score: " + str(score), True, WHITE)
         screen.blit(txt_score, [15, 15])
 
         pygame.display.flip()
-    else:
-        print("Game Over")
-        draw_main_menu()
-
-    # --- Limit to 60 frames per second
-    clock.tick(60)
+        # else:
+        #     print("Game Over")
+        #     first_run = True
+        #     draw_main_menu()
 
 # Close the window and quit.
 pygame.quit()
