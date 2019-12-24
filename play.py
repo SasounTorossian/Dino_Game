@@ -141,10 +141,9 @@ cactus_arr_max = 5
 #         cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
 
 
-# def reset_cactus_position():
-#     cactus[0].x = random.randrange(600, 650)
-#     for i in range(1, cactus_count):
-#         cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
+def reset_cactus_position():
+    if len(cactus_arr) > 0:
+        cactus_arr.clear()
 
 def spawn_cactus_mod():
     if len(cactus_arr) >= cactus_arr_max:
@@ -158,7 +157,7 @@ def spawn_cactus_mod():
         # cactus.x = random.randrange(600, 700)
         cactus_arr.append(cactus)
     else:
-        if cactus_arr[-1].x < random.randint(50, 500):
+        if cactus_arr[-1].x < random.randint(10, 500):
             print("spawning cactus")
             print("position of previous cactus is {}".format(cactus_arr[-1].x ))
             cactus = Cactus(600, 180, -4, 0, 30, 40, BLACK)
@@ -219,6 +218,7 @@ while not done:
         # Reset everything when the user starts the game.
         if collision and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN):
             collision = False
+            reset_cactus_position()
             # set_cactus_position()
             # spawn_cactus()
             pygame.mouse.set_visible(False)
@@ -290,11 +290,13 @@ while not done:
         move_cactus_mod()
         # player.check_out_of_screen()
 
-        # # Check the collision of the player with the cactus
-        # if check_collision(player.x, player.y, player.width, player.height,
-        #                    cactus.x, cactus.y, cactus.width, cactus.height):
-        #     collision = True
-        #     pygame.mouse.set_visible(True)
+        #  Check the collision of the player with the cactus
+        for i in range(len(cactus_arr)):
+            if check_collision(player.x, player.y, player.width, player.height,
+                               cactus_arr[i].x, cactus_arr[i].y, cactus_arr[i].width, cactus_arr[i].height):
+                collision = True
+                pygame.mouse.set_visible(True)
+                break
 
         # Draw the score.
         txt_score = font_30.render("Score: " + str(score), True, WHITE)
