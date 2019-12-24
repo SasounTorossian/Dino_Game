@@ -51,8 +51,8 @@ class Dinosaur:
         self.color = color
 
     def load_image(self, img):
-        self.image = pygame.image.load(img).convert()
-        self.image.set_colorkey(BLACK)
+        self.image = pygame.image.load(img).convert_alpha()
+        # self.image.set_colorkey(BLACK)
 
     def draw_image(self):
         screen.blit(self.image, [self.x, self.y])
@@ -122,42 +122,7 @@ def draw_main_menu():
 
 # Create a player object
 player = Dinosaur(20, 180, 0, 0, 30, 40, BLACK)
-# player.load_image("player_mod.png")
-
-
-# def jump_dino():
-#     jump_acc = -10
-#     jump = True
-#     while jump:
-#         if jump_acc < 0:
-#             print("jumps < 0")
-#             player.dy = jump_acc
-#             player.move_y()
-#             player.draw_rect()
-#             pygame.time.delay(20)
-#             jump_acc += 1
-#             move_cactus()
-#         elif 0 <= jump_acc <= 10:
-#             print("jumps >= 0")
-#             player.dy = jump_acc
-#             player.move_y()
-#             player.draw_rect()
-#             pygame.time.delay(20)
-#             jump_acc += 1
-#             move_cactus()
-#         elif jump_acc > 10:
-#             print("jumps > 10")
-#             player.dy = 0
-#             player.move_y()
-#             player.draw_rect()
-#             pygame.time.delay(20)
-#             move_cactus()
-#             jump = False
-        # jump_acc = -10
-    # else:
-        # jump_flag = False
-        # jump_acc = -10
-        # move_cactus()
+player.load_image("hiclipart.com.png")
 
 
 # Setup the enemy cactus (PUT IN FUNC)
@@ -172,13 +137,13 @@ for i in range(cactus_count):
 def set_cactus_position():
     cactus[0].x = random.randrange(600, 650)
     for i in range(1, cactus_count):
-        cactus[i].x = cactus[i - 1].x + random.randrange(30, 300)
+        cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
 
 
 def reset_cactus_position():
     cactus[0].x = random.randrange(600, 650)
     for i in range(1, cactus_count):
-        cactus[i].x = cactus[i - 1].x + random.randrange(30, 300)
+        cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
 
 
 def move_cactus():
@@ -203,14 +168,6 @@ while not done:
         if collision and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN):
             collision = False
             set_cactus_position()
-            # for i in range(cactus_count):
-            #     cactus[i].y = 180
-            #     cactus[i].x = 600
-            # player.x = 175
-            # player.dx = 0
-            # player.dy = 0
-            # score = 0
-
             pygame.mouse.set_visible(False)
 
         if not collision:
@@ -242,21 +199,24 @@ while not done:
                 print("jumps < 0")
                 player.dy = jump_acc
                 player.move_y()
-                player.draw_rect()
+                # player.draw_rect()
+                player.draw_image()
                 pygame.time.delay(20)
                 jump_acc += 1
             elif 0 <= jump_acc <= 13:
                 print("jumps >= 0")
                 player.dy = jump_acc
                 player.move_y()
-                player.draw_rect()
+                # player.draw_rect()
+                player.draw_image()
                 pygame.time.delay(20)
                 jump_acc += 1
             elif jump_acc > 13:
                 print("jumps > 13")
                 player.dy = 0
                 player.move_y()
-                player.draw_rect()
+                # player.draw_rect()
+                player.draw_image()
                 pygame.time.delay(20)
                 jump_flag = False
                 jump_acc = -13
@@ -264,7 +224,8 @@ while not done:
                 jump_flag = False
                 jump_acc = -13
         else:
-            player.draw_rect()
+            # player.draw_rect()
+            player.draw_image()
 
         # player.draw_rect()
         move_cactus()
