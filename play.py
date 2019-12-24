@@ -83,8 +83,8 @@ class Cactus:
         self.color = color
 
     def load_image(self, img):
-        self.image = pygame.image.load(img).convert()
-        self.image.set_colorkey(BLACK)
+        self.image = pygame.image.load(img).convert_alpha()
+        # self.image.set_colorkey(BLACK)
 
     def draw_image(self):
         screen.blit(self.image, [self.x, self.y])
@@ -122,7 +122,7 @@ def draw_main_menu():
 
 # Create a player object
 player = Dinosaur(20, 180, 0, 0, 30, 40, BLACK)
-player.load_image("hiclipart.com.png")
+player.load_image("Dino.png")
 
 
 # Setup the enemy cactus (PUT IN FUNC)
@@ -148,7 +148,8 @@ def reset_cactus_position():
 
 def move_cactus():
     for i in range(cactus_count):
-        cactus[i].draw_rect()
+        cactus[i].load_image("Cactus.png")
+        cactus[i].draw_image()
         cactus[i].move_x()
         # Should implement  def check_out_of_screen(self) perhaps?
         if cactus[i].x < 0:
