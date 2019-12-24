@@ -84,7 +84,7 @@ class Cactus:
 
     def load_image(self, img):
         self.image = pygame.image.load(img).convert_alpha()
-        # self.image.set_colorkey(BLACK)
+        self.image.set_colorkey(BLACK)
 
     def draw_image(self):
         screen.blit(self.image, [self.x, self.y])
@@ -124,41 +124,92 @@ def draw_main_menu():
 player = Dinosaur(20, 180, 0, 0, 30, 40, BLACK)
 player.load_image("Dino.png")
 
-
 # Setup the enemy cactus (PUT IN FUNC)
-cactus = []
-cactus_count = 3
-for i in range(cactus_count):
-    cacti = Cactus(600, 180, -4, 0, 30, 40, BLACK)
-    cactus.append(cacti)
+cactus_arr = []
+# maximum of 5 cacti on screen
+cactus_arr_max = 5
+# for i in range(cactus_count):
+#
+#     cactus.append(cacti)
+# cactus = Cactus(600, 180, -4, 0, 30, 40, BLACK)
 
 
 # Figure out better way to set cactus position
-def set_cactus_position():
-    cactus[0].x = random.randrange(600, 650)
-    for i in range(1, cactus_count):
-        cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
+# def set_cactus_position():
+#     cactus[0].x = random.randrange(600, 650)
+#     for i in range(1, cactus_count):
+#         cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
 
 
-def reset_cactus_position():
-    cactus[0].x = random.randrange(600, 650)
-    for i in range(1, cactus_count):
-        cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
+# def reset_cactus_position():
+#     cactus[0].x = random.randrange(600, 650)
+#     for i in range(1, cactus_count):
+#         cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
+
+def spawn_cactus_mod():
+    if len(cactus_arr) >= cactus_arr_max:
+        print("maximum number of cacti on screen")
+    elif not len(cactus_arr):
+        print("spawning first cactus")
+        cactus = Cactus(600, 180, -4, 0, 30, 40, BLACK)
+        cactus.load_image("Cactus.png")
+        cactus.draw_image()
+        # cactus.y = 180
+        # cactus.x = random.randrange(600, 700)
+        cactus_arr.append(cactus)
+    else:
+        if cactus_arr[-1].x < random.randint(50, 500):
+            print("spawning cactus")
+            print("position of previous cactus is {}".format(cactus_arr[-1].x ))
+            cactus = Cactus(600, 180, -4, 0, 30, 40, BLACK)
+            # later, load from array of cactus shapes
+            cactus.load_image("Cactus.png")
+            cactus.draw_image()
+            # cactus.y = 180
+            # cactus.x = 600
+            cactus_arr.append(cactus)
+        else:
+            print("previous cactus not traveled far enough")
+
+
+# def spawn_cactus():
+#     print("spawning cactus")
+#     cactus.load_image("Cactus.png")
+#     cactus.draw_image()
+#     # cactus.move_x()
+#     cactus.y = 180
+#     cactus.x = random.randrange(600, 700)
 
 
 def move_cactus():
-    for i in range(cactus_count):
-        cactus[i].load_image("Cactus.png")
-        cactus[i].draw_image()
-        cactus[i].move_x()
-        # Should implement  def check_out_of_screen(self) perhaps?
-        if cactus[i].x < 0:
-            cactus[i].y = 180
-            cactus[i].x = random.randrange(600, 800)
+    # after deleting first element, array size is reduce, but still trying to access last index which doesn't exist.
+    for i in range(len(cactus_arr)):
+        print("moving cactus, current array length is {}".format(len(cactus_arr)))
+        print("position of cactus {} is {}".format(i, cactus_arr[i].x))
+        cactus_arr[i].move_x()
+        cactus_arr[i].draw_image()
+        if cactus_arr[i].x < 0:
+            print("cactus {} out of bounds, removing from array".format(i))
+            cactus_arr.pop(i)
+            print("new length of array is {}".format(len(cactus_arr)))
+
+
+def move_cactus_mod():
+    i = 0
+    while i < len(cactus_arr):
+        # print("moving cactus, current array length is {}".format(len(cactus_arr)))
+        # print("position of cactus {} is {}".format(i, cactus_arr[i].x))
+        cactus_arr[i].move_x()
+        cactus_arr[i].draw_image()
+        if cactus_arr[i].x < 0:
+            # print("cactus {} out of bounds, removing from array".format(i))
+            cactus_arr.pop(i)
+            # print("new length of array is {}".format(len(cactus_arr)))
+        i += 1
 
 
 # -------- Main Program Loop -----------
-
+spawn_time = 0
 while not done:
     # --- Main event loop
     for event in pygame.event.get():
@@ -168,7 +219,8 @@ while not done:
         # Reset everything when the user starts the game.
         if collision and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN):
             collision = False
-            set_cactus_position()
+            # set_cactus_position()
+            # spawn_cactus()
             pygame.mouse.set_visible(False)
 
         if not collision:
@@ -229,16 +281,20 @@ while not done:
             player.draw_image()
 
         # player.draw_rect()
-        move_cactus()
+        if spawn_time == 5:
+            spawn_cactus_mod()
+            spawn_time = 0
+        else:
+            spawn_time += 1
+
+        move_cactus_mod()
         # player.check_out_of_screen()
 
         # # Check the collision of the player with the cactus
-        for i in range(cactus_count):
-            if check_collision(player.x, player.y, player.width, player.height,
-                               cactus[i].x, cactus[i].y, cactus[i].width, cactus[i].height):
-                collision = True
-                pygame.mouse.set_visible(True)
-                break
+        # if check_collision(player.x, player.y, player.width, player.height,
+        #                    cactus.x, cactus.y, cactus.width, cactus.height):
+        #     collision = True
+        #     pygame.mouse.set_visible(True)
 
         # Draw the score.
         txt_score = font_30.render("Score: " + str(score), True, WHITE)
