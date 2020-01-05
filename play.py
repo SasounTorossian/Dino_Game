@@ -183,14 +183,14 @@ def spawn_cactus_mod():
 def move_cactus():
     # after deleting first element, array size is reduce, but still trying to access last index which doesn't exist.
     for i in range(len(cactus_arr)):
-        print("moving cactus, current array length is {}".format(len(cactus_arr)))
-        print("position of cactus {} is {}".format(i, cactus_arr[i].x))
+        # print("moving cactus, current array length is {}".format(len(cactus_arr)))
+        # print("position of cactus {} is {}".format(i, cactus_arr[i].x))
         cactus_arr[i].move_x()
         cactus_arr[i].draw_image()
         if cactus_arr[i].x < 0:
-            print("cactus {} out of bounds, removing from array".format(i))
+            # print("cactus {} out of bounds, removing from array".format(i))
             cactus_arr.pop(i)
-            print("new length of array is {}".format(len(cactus_arr)))
+            # print("new length of array is {}".format(len(cactus_arr)))
 
 
 def move_cactus_mod():
