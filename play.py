@@ -13,31 +13,54 @@ pygame.init()
 size = (600, 300)
 screen = pygame.display.set_mode(size)
 
+# 8-bit Font file path
+font_file_path = "C:\\Users\\Sasoun\\Documents\\Software Workspace\\PycharmProjects\\Dino_Game\\VCR_OSD_MONO_1.001.ttf"
+
 # Load the fonts
-font_40 = pygame.font.SysFont("Arial", 40, True, False)
-font_30 = pygame.font.SysFont("Arial", 30, True, False)
-font_10 = pygame.font.SysFont("Arial", 10, True, False)
-text_title = font_40.render("Dino Jump", True, BLACK)
-text_ins = font_30.render("Click to Play!", True, BLACK)
+# font_40 = pygame.font.SysFont("Arial", 40, True, False)
+# font_30 = pygame.font.SysFont("Arial", 30, True, False)
+# font_20 = pygame.font.SysFont("Arial", 20, True, False)
+# font_10 = pygame.font.SysFont("Arial", 10, True, False)
+# text_title = font_40.render("Dino Jump", True, BLACK)
+# text_ins = font_30.render("Click to Play!", True, BLACK)
+# name_tag = font_10.render("Sasoun Torossian", True, BLACK)
+# pygame.display.set_caption("Dino Jump")
+
+
+font_50 = pygame.font.Font(font_file_path, 50)
+font_40 = pygame.font.Font(font_file_path, 40)
+font_30 = pygame.font.Font(font_file_path, 30)
+font_20 = pygame.font.Font(font_file_path, 20)
+font_10 = pygame.font.Font(font_file_path, 10)
+text_title = font_50.render("Dino Jump", True, BLACK)
+text_ins = font_30.render("Click to Play", True, BLACK)
 name_tag = font_10.render("Sasoun Torossian", True, BLACK)
 pygame.display.set_caption("Dino Jump")
 
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-# Loop until the user clicks the close button.
+# Game flow variables
 done = False
 collision = True
+first_run = 1
+
+# Jump variables
 jump_flag = False
 jump_acc = -13
 
-# Store the score
+# Score variables
 score = 0
+hi_score = 0
+updateScore = pygame.USEREVENT
 
+# Cactus spawn interval, Replace with pygame.time.set_timer() at some point
+spawn_time = 0
 
 # # Store speeding up mechanic (Needs to be implemented much later)
 # cactus_speed = [4, 9]
 # score_speed_threshold = 50
+
 
 class Dinosaur:
     def __init__(self, x=0, y=180, dx=4, dy=4, width=40, height=40, color=BLACK):
@@ -112,11 +135,11 @@ def check_collision(player_x, player_y, player_width, player_height, cac_x, cac_
 
 
 def draw_main_menu():
-    screen.blit(text_title, [size[0] / 2 - 106, size[1] / 2 - 100])
-    score_text = font_40.render("Score: " + str(score), True, BLACK)
-    screen.blit(score_text, [size[0] / 2 - 70, size[1] / 2 - 30])
-    screen.blit(text_ins, [size[0] / 2 - 85, size[1] / 2 + 40])
-    screen.blit(name_tag, [size[0] / 2 - 300, size[1] / 2 + 135])
+    screen.blit(text_title, [size[0] / 2 - 130, size[1] / 2 - 100])
+    score_text = font_40.render("Score:" + str(score).zfill(5), True, BLACK)
+    screen.blit(score_text, [size[0] / 2 - 135, size[1] / 2 - 30])
+    screen.blit(text_ins, [size[0] / 2 - 120, size[1] / 2 + 40])
+    screen.blit(name_tag, [size[0] / 2 - 290, size[1] / 2 + 135])
     pygame.display.flip()
 
 
@@ -144,6 +167,7 @@ cactus_arr_max = 5
 def reset_cactus_position():
     if len(cactus_arr) > 0:
         cactus_arr.clear()
+
 
 def spawn_cactus_mod():
     if len(cactus_arr) >= cactus_arr_max:
@@ -207,20 +231,27 @@ def move_cactus_mod():
         i += 1
 
 
+# def update_score():
+#     global score
+#     score += 1
+
 # -------- Main Program Loop -----------
-spawn_time = 0
 while not done:
     # --- Main event loop
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             done = True
 
         # Reset everything when the user starts the game.
         if collision and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN):
+            pygame.time.set_timer(updateScore, 100)
             collision = False
             reset_cactus_position()
+            # NEED TO reset dino position too (because mid-jump)
             # set_cactus_position()
-            # spawn_cactus()
+            # spawn_cactus()#
+            score = 0
             pygame.mouse.set_visible(False)
 
         if not collision:
@@ -230,6 +261,9 @@ while not done:
                     print("jump_flag = True")
                     jump_flag = True
                     # jump_dino()
+
+        if event.type == updateScore:
+            score += 1
 
             # if event.type == pygame.KEYUP:
             #     if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
@@ -243,10 +277,7 @@ while not done:
     if not collision:
         pygame.draw.line(screen, BLACK, (0, 200), (600, 200))
 
-        # player.draw_image()
-        # player.move_y()
-        # player.check_out_of_screen()
-
+        # NEED TO COME UP WITH BETTER SOLUTION FOR JUMPING MECHANISM
         if jump_flag:
             if jump_acc < 0:
                 print("jumps < 0")
@@ -277,10 +308,8 @@ while not done:
                 jump_flag = False
                 jump_acc = -13
         else:
-            # player.draw_rect()
             player.draw_image()
 
-        # player.draw_rect()
         if spawn_time == 5:
             spawn_cactus_mod()
             spawn_time = 0
@@ -288,7 +317,6 @@ while not done:
             spawn_time += 1
 
         move_cactus_mod()
-        # player.check_out_of_screen()
 
         #  Check the collision of the player with the cactus
         for i in range(len(cactus_arr)):
@@ -299,11 +327,21 @@ while not done:
                 break
 
         # Draw the score.
-        txt_score = font_30.render("Score: " + str(score), True, WHITE)
-        screen.blit(txt_score, [15, 15])
+        if not hi_score:
+            txt_score = font_20.render(str(score).zfill(5), True, WHITE)
+            screen.blit(txt_score, [530, 15])
+        else:
+            # Two separate renders for colour contrast
+            txt_score = font_20.render("HI " + str(hi_score).zfill(5) + " " + str(score).zfill(5), True, WHITE)
+            screen.blit(txt_score, [430, 15])
 
         pygame.display.flip()
     else:
+        # Stop the score timer
+        pygame.time.set_timer(updateScore, 0)
+        if score > hi_score:
+            hi_score = score
+
         draw_main_menu()
 
     # --- Limit to 60 frames per second
