@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="45766a9b-4c9c-4e44-82e8-3322d09da087" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play.py" beforeDir="false" afterPath="$PROJECT_DIR$/play.py" afterDir="false" />
-    </list>
+    <list default="true" id="45766a9b-4c9c-4e44-82e8-3322d09da087" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -141,7 +138,14 @@
       <option name="project" value="LOCAL" />
       <updated>1578247849296</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Added score mechanic. Changed fonts to 8-bit.">
+      <created>1578248656365</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1578248656365</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -166,7 +170,8 @@
     <MESSAGE value="Modified cactus spawning mechanics" />
     <MESSAGE value="Removed some comments to check git commit status" />
     <MESSAGE value="Added score mechanic. Changed fonts to 8-bit." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added score mechanic. Changed fonts to 8-bit." />
+    <MESSAGE value="Changed game colours" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed game colours" />
   </component>
   <component name="WindowStateProjectService">
     <state x="372" y="6" key="CommitChangelistDialog2" timestamp="1578247848630">
