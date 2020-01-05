@@ -4,8 +4,9 @@ import time
 
 # Define some colors
 BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GRAY = (159, 163, 168)
+OFF_WHITE = (225, 225, 225)
+OFF_GRAY = (80, 80, 80)
+OFF_LIGHT_GRAY = (115, 115, 115)
 
 pygame.init()
 
@@ -17,16 +18,6 @@ screen = pygame.display.set_mode(size)
 font_file_path = "C:\\Users\\Sasoun\\Documents\\Software Workspace\\PycharmProjects\\Dino_Game\\VCR_OSD_MONO_1.001.ttf"
 
 # Load the fonts
-# font_40 = pygame.font.SysFont("Arial", 40, True, False)
-# font_30 = pygame.font.SysFont("Arial", 30, True, False)
-# font_20 = pygame.font.SysFont("Arial", 20, True, False)
-# font_10 = pygame.font.SysFont("Arial", 10, True, False)
-# text_title = font_40.render("Dino Jump", True, BLACK)
-# text_ins = font_30.render("Click to Play!", True, BLACK)
-# name_tag = font_10.render("Sasoun Torossian", True, BLACK)
-# pygame.display.set_caption("Dino Jump")
-
-
 font_50 = pygame.font.Font(font_file_path, 50)
 font_40 = pygame.font.Font(font_file_path, 40)
 font_30 = pygame.font.Font(font_file_path, 30)
@@ -144,7 +135,7 @@ def draw_main_menu():
 
 
 # Create a player object
-player = Dinosaur(20, 180, 0, 0, 30, 40, BLACK)
+player = Dinosaur(20, 180, 0, 0, 30, 40, OFF_GRAY)
 player.load_image("Dino.png")
 
 # Setup the enemy cactus (PUT IN FUNC)
@@ -174,7 +165,7 @@ def spawn_cactus_mod():
         print("maximum number of cacti on screen")
     elif not len(cactus_arr):
         print("spawning first cactus")
-        cactus = Cactus(600, 180, -4, 0, 30, 40, BLACK)
+        cactus = Cactus(600, 180, -4, 0, 30, 40, OFF_GRAY)
         cactus.load_image("Cactus.png")
         cactus.draw_image()
         # cactus.y = 180
@@ -184,7 +175,7 @@ def spawn_cactus_mod():
         if cactus_arr[-1].x < random.randint(10, 500):
             print("spawning cactus")
             print("position of previous cactus is {}".format(cactus_arr[-1].x ))
-            cactus = Cactus(600, 180, -4, 0, 30, 40, BLACK)
+            cactus = Cactus(600, 180, -4, 0, 30, 40, OFF_GRAY)
             # later, load from array of cactus shapes
             cactus.load_image("Cactus.png")
             cactus.draw_image()
@@ -271,7 +262,7 @@ while not done:
             #         jump_dino()
 
     # Screen-clearing code goes here
-    screen.fill(GRAY)
+    screen.fill(OFF_WHITE)
 
     # Drawing code should go here
     if not collision:
@@ -328,12 +319,14 @@ while not done:
 
         # Draw the score.
         if not hi_score:
-            txt_score = font_20.render(str(score).zfill(5), True, WHITE)
+            txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
             screen.blit(txt_score, [530, 15])
         else:
             # Two separate renders for colour contrast
-            txt_score = font_20.render("HI " + str(hi_score).zfill(5) + " " + str(score).zfill(5), True, WHITE)
-            screen.blit(txt_score, [430, 15])
+            txt_hi_score = font_20.render("HI " + str(hi_score).zfill(5), True, OFF_LIGHT_GRAY)
+            screen.blit(txt_hi_score, [430, 15])
+            txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
+            screen.blit(txt_score, [530, 15])
 
         pygame.display.flip()
     else:
