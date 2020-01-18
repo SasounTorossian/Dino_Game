@@ -11,18 +11,18 @@ OFF_LIGHT_GRAY = (115, 115, 115)
 pygame.init()
 
 # Set the width and height of the screen [width, height]
-size = (600, 300)
-screen = pygame.display.set_mode(size)
+SIZE = (600, 300)
+screen = pygame.display.set_mode(SIZE)
 
 # 8-bit Font file path
-font_file_path = "C:\\Users\\Sasoun\\Documents\\Software Workspace\\PycharmProjects\\Dino_Game\\VCR_OSD_MONO_1.001.ttf"
+FONT_FILE_PATH = "C:\\Users\\Sasoun\\Documents\\Software Workspace\\PycharmProjects\\Dino_Game\\VCR_OSD_MONO_1.001.ttf"
 
 # Load the fonts
-font_50 = pygame.font.Font(font_file_path, 50)
-font_40 = pygame.font.Font(font_file_path, 40)
-font_30 = pygame.font.Font(font_file_path, 30)
-font_20 = pygame.font.Font(font_file_path, 20)
-font_10 = pygame.font.Font(font_file_path, 10)
+font_50 = pygame.font.Font(FONT_FILE_PATH, 50)
+font_40 = pygame.font.Font(FONT_FILE_PATH, 40)
+font_30 = pygame.font.Font(FONT_FILE_PATH, 30)
+font_20 = pygame.font.Font(FONT_FILE_PATH, 20)
+font_10 = pygame.font.Font(FONT_FILE_PATH, 10)
 text_title = font_50.render("Dino Jump", True, BLACK)
 text_ins = font_30.render("Click to Play", True, BLACK)
 name_tag = font_10.render("Sasoun Torossian", True, BLACK)
@@ -38,7 +38,7 @@ first_run = True  # Indicates if game is being run for first time
 
 # Jump variables
 jump_flag = False
-jump_acc = -13  # How quickly Dino jumps and descends.
+JUMP_ACC = -13  # How quickly Dino jumps and descends.
 
 # Score variables
 score = 0
@@ -54,20 +54,21 @@ spawn_counter = 0
 
 
 class Dinosaur:
-    def __init__(self, x=0, y=180, dx=4, dy=4, width=40, height=40, color=BLACK):
-        self.image = ""
+    def __init__(self, x=0, y=180, dx=4, dy=4, width=40, height=40, jump_acc=0):
+        self.image = pygame.image.load('Dino.png').convert_alpha()
         self.x = x
         self.y = y
         self.dx = dx
         self.dy = dy
         self.width = width
         self.height = height
-        self.color = color
+        self.jump_acc = jump_acc
+        # self.color = color
 
-    # Load Dino image. Create alpha channel for transparency
-    def load_image(self, img):
-        self.image = pygame.image.load(img).convert_alpha()
-        # self.image.set_colorkey(BLACK)
+    # Load Dino image. Create alpha channel for transparency. Might need for dino walk
+    # def load_image(self, img):
+    #     self.image = pygame.image.load(img).convert_alpha()
+    #     # self.image.set_colorkey(BLACK)
 
     # Used to update the image of the Dino
     def draw_image(self):
@@ -85,10 +86,26 @@ class Dinosaur:
     def draw_rect(self):
         pygame.draw.rect(screen, self.color, [self.x, self.y, self.width, self.height], 0)
 
+    def dino_jump(self):
+        global jump_flag
+        if self.jump_acc <= 13:
+            self.dy = self.jump_acc
+            self.move_y()
+            self.draw_image()
+            pygame.time.delay(15)
+            self.jump_acc += 1
+        else:
+            jump_flag = False
+            self.jump_acc = -13
+
     # Check if dino is out of screen boundaries. Might not be needed.
-    def check_out_of_screen(self):
-        if self.x + self.width > 400 or self.x < 0:
-            self.x -= self.dx
+    # def check_out_of_screen(self):
+    #     if self.x + self.width > 400 or self.x < 0:
+    #         self.x -= self.dx
+
+
+# Create a dino object
+dino = Dinosaur(20, 180, 0, 0, 30, 40, JUMP_ACC)
 
 
 class Cactus:
@@ -105,7 +122,7 @@ class Cactus:
     # Load Cactus image. Create alpha channel for transparency
     def load_image(self, img):
         self.image = pygame.image.load(img).convert_alpha()
-        self.image.set_colorkey(BLACK)
+        # self.image.set_colorkey(BLACK)
 
     # Used to update the image of the Cactus
     def draw_image(self):
@@ -130,11 +147,11 @@ class Cactus:
 
 
 def draw_main_menu():
-    screen.blit(text_title, [size[0] / 2 - 130, size[1] / 2 - 100])
+    screen.blit(text_title, [SIZE[0] / 2 - 130, SIZE[1] / 2 - 100])
     score_text = font_40.render("Score:" + str(score).zfill(5), True, BLACK)
-    screen.blit(score_text, [size[0] / 2 - 135, size[1] / 2 - 30])
-    screen.blit(text_ins, [size[0] / 2 - 120, size[1] / 2 + 40])
-    screen.blit(name_tag, [size[0] / 2 - 290, size[1] / 2 + 135])
+    screen.blit(score_text, [SIZE[0] / 2 - 135, SIZE[1] / 2 - 30])
+    screen.blit(text_ins, [SIZE[0] / 2 - 120, SIZE[1] / 2 + 40])
+    screen.blit(name_tag, [SIZE[0] / 2 - 290, SIZE[1] / 2 + 135])
     pygame.display.flip()
 
 
@@ -150,14 +167,10 @@ def draw_score():
         screen.blit(txt_score, [530, 15])
 
 
-# Create a player object
-player = Dinosaur(20, 180, 0, 0, 30, 40, OFF_GRAY)
-player.load_image("Dino.png")
-
 # Setup the enemy cactus (PUT IN FUNC)
 cactus_arr = []
 # maximum of 5 cacti on screen
-cactus_arr_max = 5
+cactus_arr_max = 4
 # for i in range(cactus_count):
 #
 #     cactus.append(cacti)
@@ -172,10 +185,10 @@ cactus_arr_max = 5
 
 def check_collision():
     for i in range(len(cactus_arr)):
-        if (player.x + player.width > cactus_arr[i].x) and \
-                (player.x < cactus_arr[i].x + cactus_arr[i].width) and \
-                (player.y < cactus_arr[i].y + cactus_arr[i].height) and \
-                (player.y + player.height > cactus_arr[i].y):
+        if (dino.x + dino.width > cactus_arr[i].x) and \
+                (dino.x < cactus_arr[i].x + cactus_arr[i].width) and \
+                (dino.y < cactus_arr[i].y + cactus_arr[i].height) and \
+                (dino.y + dino.height > cactus_arr[i].y):
             return True
         else:
             return False
@@ -236,28 +249,6 @@ def move_cactus_mod():
         i += 1
 
 
-# Probably won't need this if moving Jump method to class
-def static(name, val):
-    def decorate(func):
-        setattr(func, name, val)
-        return func
-    return decorate
-
-
-@static('jump_acc', jump_acc)
-def player_jump():
-    global jump_flag
-    if player_jump.jump_acc <= 13:
-        player.dy = player_jump.jump_acc
-        player.move_y()
-        player.draw_image()
-        pygame.time.delay(20)
-        player_jump.jump_acc += 1
-    else:
-        jump_flag = False
-        player_jump.jump_acc = -13
-
-
 # Main loop for game
 while not game_finished:
     # Called whenever there is event.
@@ -275,8 +266,6 @@ while not game_finished:
             collision = False
             reset_cactus_position()
             # NEED TO reset dino position too (because mid-jump)
-            # set_cactus_position()
-            # spawn_cactus()#
             score = 0
             pygame.mouse.set_visible(False)
 
@@ -302,9 +291,9 @@ while not game_finished:
         pygame.draw.line(screen, BLACK, (0, 200), (600, 200))  # Draw ground line.
 
         if jump_flag:
-            player_jump()
+            dino.dino_jump()
         else:
-            player.draw_image()
+            dino.draw_image()
 
         if spawn_counter == 5:
             spawn_cactus_mod()
@@ -314,7 +303,7 @@ while not game_finished:
 
         move_cactus_mod()
 
-        #  Check the collision of the player with the cactus
+        #  Check the collision of the dino with the cactus
         collision = check_collision()
 
         # Draw the score.
