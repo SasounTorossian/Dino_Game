@@ -138,6 +138,18 @@ def draw_main_menu():
     pygame.display.flip()
 
 
+def draw_score():
+    if not hi_score:
+        txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
+        screen.blit(txt_score, [530, 15])
+    else:
+        # Two separate renders for colour contrast
+        txt_hi_score = font_20.render("HI " + str(hi_score).zfill(5), True, OFF_LIGHT_GRAY)
+        screen.blit(txt_hi_score, [430, 15])
+        txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
+        screen.blit(txt_score, [530, 15])
+
+
 # Create a player object
 player = Dinosaur(20, 180, 0, 0, 30, 40, OFF_GRAY)
 player.load_image("Dino.png")
@@ -188,7 +200,7 @@ def spawn_cactus_mod():
     else:
         if cactus_arr[-1].x < random.randint(10, 500):
             print("spawning cactus")
-            print("position of previous cactus is {}".format(cactus_arr[-1].x ))
+            print("position of previous cactus is {}".format(cactus_arr[-1].x))
             cactus = Cactus(600, 180, -4, 0, 30, 40, OFF_GRAY)
             # later, load from array of cactus shapes
             cactus.load_image("Cactus.png")
@@ -197,7 +209,8 @@ def spawn_cactus_mod():
             # cactus.x = 600
             cactus_arr.append(cactus)
         else:
-            print("previous cactus not traveled far enough")
+            pass
+            # print("previous cactus not traveled far enough")
 
 
 # def spawn_cactus():
@@ -207,19 +220,6 @@ def spawn_cactus_mod():
 #     # cactus.move_x()
 #     cactus.y = 180
 #     cactus.x = random.randrange(600, 700)
-
-
-def move_cactus():
-    # after deleting first element, array size is reduce, but still trying to access last index which doesn't exist.
-    for i in range(len(cactus_arr)):
-        # print("moving cactus, current array length is {}".format(len(cactus_arr)))
-        # print("position of cactus {} is {}".format(i, cactus_arr[i].x))
-        cactus_arr[i].move_x()
-        cactus_arr[i].draw_image()
-        if cactus_arr[i].x < 0:
-            # print("cactus {} out of bounds, removing from array".format(i))
-            cactus_arr.pop(i)
-            # print("new length of array is {}".format(len(cactus_arr)))
 
 
 def move_cactus_mod():
@@ -236,21 +236,27 @@ def move_cactus_mod():
         i += 1
 
 
-def draw_score():
-    if not hi_score:
-        txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
-        screen.blit(txt_score, [530, 15])
+# Probably won't need this if moving Jump method to class
+def static(name, val):
+    def decorate(func):
+        setattr(func, name, val)
+        return func
+    return decorate
+
+
+@static('jump_acc', jump_acc)
+def player_jump():
+    global jump_flag
+    if player_jump.jump_acc <= 13:
+        player.dy = player_jump.jump_acc
+        player.move_y()
+        player.draw_image()
+        pygame.time.delay(20)
+        player_jump.jump_acc += 1
     else:
-        # Two separate renders for colour contrast
-        txt_hi_score = font_20.render("HI " + str(hi_score).zfill(5), True, OFF_LIGHT_GRAY)
-        screen.blit(txt_hi_score, [430, 15])
-        txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
-        screen.blit(txt_score, [530, 15])
+        jump_flag = False
+        player_jump.jump_acc = -13
 
-
-# def update_score():
-#     global score
-#     score += 1
 
 # Main loop for game
 while not game_finished:
@@ -274,21 +280,12 @@ while not game_finished:
             score = 0
             pygame.mouse.set_visible(False)
 
-        if not collision:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
-                    # player.dy = -4
-                    print("jump_flag = True")
-                    jump_flag = True
-                    # jump_dino()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
+                jump_flag = True
 
         if event.type == updateScore:
             score += 1
-
-            # if event.type == pygame.KEYUP:
-            #     if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
-            #         player.dy = 0
-            #         jump_dino()
 
     # Screen-clearing code goes here
     screen.fill(OFF_WHITE)
@@ -304,36 +301,8 @@ while not game_finished:
     else:
         pygame.draw.line(screen, BLACK, (0, 200), (600, 200))  # Draw ground line.
 
-        # NEED TO COME UP WITH BETTER SOLUTION FOR JUMPING MECHANISM
         if jump_flag:
-            if jump_acc < 0:
-                print("jumps < 0")
-                player.dy = jump_acc
-                player.move_y()
-                # player.draw_rect()
-                player.draw_image()
-                pygame.time.delay(20)
-                jump_acc += 1
-            elif 0 <= jump_acc <= 13:
-                print("jumps >= 0")
-                player.dy = jump_acc
-                player.move_y()
-                # player.draw_rect()
-                player.draw_image()
-                pygame.time.delay(20)
-                jump_acc += 1
-            elif jump_acc > 13:
-                print("jumps > 13")
-                player.dy = 0
-                player.move_y()
-                # player.draw_rect()
-                player.draw_image()
-                pygame.time.delay(20)
-                jump_flag = False
-                jump_acc = -13
-            else:
-                jump_flag = False
-                jump_acc = -13
+            player_jump()
         else:
             player.draw_image()
 
