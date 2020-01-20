@@ -36,12 +36,14 @@ clock = pygame.time.Clock()
 game_finished = False
 collision = False
 first_run = True  # Indicates if game is being run for first time
+# Used to lock other events while in main menu
+event_lock = True  # Come up with better solution.
 
 # Jump variables
 jump_flag = False
 JUMP_ACC = -13  # How quickly Dino jumps and descends.
 
-# Dino image list for walking
+# Dino image list for walking. Add animation when dino collides.
 DINO_IMAGES = ['Dino_1.png', 'Dino_2.png']
 updateDinoImage = pygame.USEREVENT+1
 
@@ -193,7 +195,7 @@ class Cactus:
 # Setup the enemy cactus (PUT IN FUNC)
 cactus_arr = []
 # maximum of 5 cacti on screen
-cactus_arr_max = 4
+cactus_arr_max = 3
 
 
 def reset_cactus_position():
@@ -259,18 +261,22 @@ while not game_finished:
             first_run = False
             collision = False
             reset_cactus_position()
+            dino.x = 20
+            dino.y = 180
+            dino.jump_acc = -13
+            jump_flag = False
             # NEED TO reset dino position too (because mid-jump)
             score = 0
             pygame.mouse.set_visible(False)
 
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN and not event_lock:
             if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
                 jump_flag = True
 
-        if event.type == updateScore:
+        if event.type == updateScore and not event_lock:
             score += 1
 
-        if event.type == updateDinoImage:
+        if event.type == updateDinoImage and not event_lock:
             dino.switch_dino_image()
 
     # Screen-clearing code goes here
@@ -278,6 +284,7 @@ while not game_finished:
 
     # Drawing code should go here
     if first_run or collision:
+        event_lock = True
         pygame.mouse.set_visible(True)
         pygame.time.set_timer(updateScore, 0)  # Stop score timer
         pygame.time.set_timer(updateDinoImage, 0)  # Stop dino walking animation
@@ -286,6 +293,7 @@ while not game_finished:
 
         draw_main_menu()
     else:
+        event_lock = False
         pygame.draw.line(screen, BLACK, (0, 200), (600, 200))  # Draw ground line.
 
         if jump_flag:
