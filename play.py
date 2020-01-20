@@ -1,5 +1,6 @@
 import random
 import pygame
+from itertools import cycle
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -40,6 +41,10 @@ first_run = True  # Indicates if game is being run for first time
 jump_flag = False
 JUMP_ACC = -13  # How quickly Dino jumps and descends.
 
+# Dino image list for walking
+DINO_IMAGES = ['Dino_1.png', 'Dino_2.png']
+updateDinoImage = pygame.USEREVENT+1
+
 # Score variables
 score = 0
 hi_score = 0
@@ -53,9 +58,41 @@ spawn_counter = 0
 # score_speed_threshold = 50
 
 
+def draw_main_menu():
+    screen.blit(text_title, [SIZE[0] / 2 - 130, SIZE[1] / 2 - 100])
+    score_text = font_40.render("Score:" + str(score).zfill(5), True, BLACK)
+    screen.blit(score_text, [SIZE[0] / 2 - 135, SIZE[1] / 2 - 30])
+    screen.blit(text_ins, [SIZE[0] / 2 - 120, SIZE[1] / 2 + 40])
+    screen.blit(name_tag, [SIZE[0] / 2 - 290, SIZE[1] / 2 + 135])
+    pygame.display.flip()
+
+
+def draw_score():
+    if not hi_score:
+        txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
+        screen.blit(txt_score, [530, 15])
+    else:
+        # Two separate renders for colour contrast
+        txt_hi_score = font_20.render("HI " + str(hi_score).zfill(5), True, OFF_LIGHT_GRAY)
+        screen.blit(txt_hi_score, [430, 15])
+        txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
+        screen.blit(txt_score, [530, 15])
+
+
+def check_collision():
+    for i in range(len(cactus_arr)):
+        if (dino.x + dino.width > cactus_arr[i].x) and \
+                (dino.x < cactus_arr[i].x + cactus_arr[i].width) and \
+                (dino.y < cactus_arr[i].y + cactus_arr[i].height) and \
+                (dino.y + dino.height > cactus_arr[i].y):
+            return True
+        else:
+            return False
+
+
 class Dinosaur:
-    def __init__(self, x=0, y=180, dx=4, dy=4, width=40, height=40, jump_acc=0):
-        self.image = pygame.image.load('Dino.png').convert_alpha()
+    def __init__(self, x=0, y=180, dx=4, dy=4, width=40, height=40, jump_acc=0, switch_image=0):
+        self.image = pygame.image.load(DINO_IMAGES[0]).convert_alpha()
         self.x = x
         self.y = y
         self.dx = dx
@@ -63,12 +100,12 @@ class Dinosaur:
         self.width = width
         self.height = height
         self.jump_acc = jump_acc
-        # self.color = color
+        self.switch_image = switch_image
 
-    # Load Dino image. Create alpha channel for transparency. Might need for dino walk
-    # def load_image(self, img):
-    #     self.image = pygame.image.load(img).convert_alpha()
-    #     # self.image.set_colorkey(BLACK)
+    # Creates walking animation when called every 100ms
+    def switch_dino_image(self):
+        self.switch_image = not self.switch_image
+        self.image = pygame.image.load(DINO_IMAGES[self.switch_image]).convert_alpha()
 
     # Used to update the image of the Dino
     def draw_image(self):
@@ -84,7 +121,7 @@ class Dinosaur:
 
     # Draw rectangle instead of image. Used for testing.
     def draw_rect(self):
-        pygame.draw.rect(screen, self.color, [self.x, self.y, self.width, self.height], 0)
+        pygame.draw.rect(screen, [self.x, self.y, self.width, self.height], 0)
 
     def dino_jump(self):
         global jump_flag
@@ -146,52 +183,17 @@ class Cactus:
             self.x -= self.dx
 
 
-def draw_main_menu():
-    screen.blit(text_title, [SIZE[0] / 2 - 130, SIZE[1] / 2 - 100])
-    score_text = font_40.render("Score:" + str(score).zfill(5), True, BLACK)
-    screen.blit(score_text, [SIZE[0] / 2 - 135, SIZE[1] / 2 - 30])
-    screen.blit(text_ins, [SIZE[0] / 2 - 120, SIZE[1] / 2 + 40])
-    screen.blit(name_tag, [SIZE[0] / 2 - 290, SIZE[1] / 2 + 135])
-    pygame.display.flip()
-
-
-def draw_score():
-    if not hi_score:
-        txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
-        screen.blit(txt_score, [530, 15])
-    else:
-        # Two separate renders for colour contrast
-        txt_hi_score = font_20.render("HI " + str(hi_score).zfill(5), True, OFF_LIGHT_GRAY)
-        screen.blit(txt_hi_score, [430, 15])
-        txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
-        screen.blit(txt_score, [530, 15])
-
+''' Single instance of cactus that produces 
+    cacti clones which go across the screen.
+    can be a timer event like the score.
+    list of cactus images, of different size
+    play original, see how often they spawn.
+    control spawn rate by semi-randomizing spawn_timer'''
 
 # Setup the enemy cactus (PUT IN FUNC)
 cactus_arr = []
 # maximum of 5 cacti on screen
 cactus_arr_max = 4
-# for i in range(cactus_count):
-#
-#     cactus.append(cacti)
-# cactus = Cactus(600, 180, -4, 0, 30, 40, BLACK)
-
-
-# Figure out better way to set cactus position
-# def set_cactus_position():
-#     cactus[0].x = random.randrange(600, 650)
-#     for i in range(1, cactus_count):
-#         cactus[i].x = cactus[i - 1].x + random.randrange(50, 300)
-
-def check_collision():
-    for i in range(len(cactus_arr)):
-        if (dino.x + dino.width > cactus_arr[i].x) and \
-                (dino.x < cactus_arr[i].x + cactus_arr[i].width) and \
-                (dino.y < cactus_arr[i].y + cactus_arr[i].height) and \
-                (dino.y + dino.height > cactus_arr[i].y):
-            return True
-        else:
-            return False
 
 
 def reset_cactus_position():
@@ -226,15 +228,6 @@ def spawn_cactus_mod():
             # print("previous cactus not traveled far enough")
 
 
-# def spawn_cactus():
-#     print("spawning cactus")
-#     cactus.load_image("Cactus.png")
-#     cactus.draw_image()
-#     # cactus.move_x()
-#     cactus.y = 180
-#     cactus.x = random.randrange(600, 700)
-
-
 def move_cactus_mod():
     i = 0
     while i < len(cactus_arr):
@@ -262,6 +255,7 @@ while not game_finished:
         # Reset everything when the user starts the game, or when they crash
         if (first_run or collision) and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN):
             pygame.time.set_timer(updateScore, 100)
+            pygame.time.set_timer(updateDinoImage, 100)
             first_run = False
             collision = False
             reset_cactus_position()
@@ -276,13 +270,17 @@ while not game_finished:
         if event.type == updateScore:
             score += 1
 
+        if event.type == updateDinoImage:
+            dino.switch_dino_image()
+
     # Screen-clearing code goes here
     screen.fill(OFF_WHITE)
 
     # Drawing code should go here
     if first_run or collision:
         pygame.mouse.set_visible(True)
-        pygame.time.set_timer(updateScore, 0)  # Stop the score timer
+        pygame.time.set_timer(updateScore, 0)  # Stop score timer
+        pygame.time.set_timer(updateDinoImage, 0)  # Stop dino walking animation
         if score > hi_score:  # Calculate hi score
             hi_score = score
 
