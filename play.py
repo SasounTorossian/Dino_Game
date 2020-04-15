@@ -2,6 +2,14 @@ import random
 import pygame
 from itertools import cycle
 
+# TODO: Organize files into folder (assets)
+# TODO: Organize GUI into single class? (online examples) (Inherit from GameEngine)
+# TODO: Game engine wrapper class for handling
+# TODO: Make use of @classmethod and @staticmethod
+# TODO: Clean up methods. Put into Cactus or Dinosaur class
+# TODO: Clean up globals. Put into GUI or GameEngine class
+# TODO: After Refactor, figure out new features.
+
 # Define some colors
 BLACK = (0, 0, 0)
 OFF_WHITE = (225, 225, 225)
@@ -185,7 +193,7 @@ class Cactus:
             self.x -= self.dx
 
 
-''' Single instance of cactus that produces 
+''' Single instance of cactus that produces
     cacti clones which go across the screen.
     can be a timer event like the score.
     list of cactus images, of different size
