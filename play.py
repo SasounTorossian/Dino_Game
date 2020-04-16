@@ -43,16 +43,12 @@ clock = pygame.time.Clock()
 # Game flow variables
 game_finished = False
 collision = False
+# TODO: Why not just use collision flag
 first_run = True  # Indicates if game is being run for first time
 # Used to lock other events while in main menu
 event_lock = True  # Come up with better solution.
 
-# Jump variables
-jump_flag = False
-JUMP_ACC = -13  # How quickly Dino jumps and descends.
-
 # Dino image list for walking. Add animation when dino collides.
-DINO_IMAGES = ['Dino_1.png', 'Dino_2.png']
 updateDinoImage = pygame.USEREVENT+1
 
 # Score variables
@@ -67,7 +63,7 @@ spawn_counter = 0
 # cactus_speed = [4, 9]
 # score_speed_threshold = 50
 
-
+# TODO: Put all into GUI class. Different screens will inherit?
 def draw_main_menu():
     screen.blit(text_title, [SIZE[0] / 2 - 130, SIZE[1] / 2 - 100])
     score_text = font_40.render("Score:" + str(score).zfill(5), True, BLACK)
@@ -88,7 +84,7 @@ def draw_score():
         txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
         screen.blit(txt_score, [530, 15])
 
-
+# TODO: Move this to class (as @classmethod ?)
 def check_collision():
     for i in range(len(cactus_arr)):
         if (dino.x + dino.width > cactus_arr[i].x) and \
@@ -100,32 +96,25 @@ def check_collision():
             return False
 
 
-class Dinosaur:
-    def __init__(self, x=0, y=180, dx=4, dy=4, width=40, height=40, jump_acc=0, switch_image=0):
-        self.image = pygame.image.load(DINO_IMAGES[0]).convert_alpha()
+class Object():
+    def __init__(self, x, y, dx, dy, width, height, image):
+        self.image = pygame.image.load(image).convert_alpha()
         self.x = x
         self.y = y
         self.dx = dx
         self.dy = dy
         self.width = width
         self.height = height
-        self.jump_acc = jump_acc
-        self.switch_image = switch_image
 
-    # Creates walking animation when called every 100ms
-    def switch_dino_image(self):
-        self.switch_image = not self.switch_image
-        self.image = pygame.image.load(DINO_IMAGES[self.switch_image]).convert_alpha()
+    def load_image(self, img):
+        self.image = pygame.image.load(img).convert_alpha()
 
-    # Used to update the image of the Dino
     def draw_image(self):
         screen.blit(self.image, [self.x, self.y])
 
-    # Move Dino on x axis by amount defined by dx. Might not be needed.
     def move_x(self):
         self.x += self.dx
 
-    # Move Dino on y axis by amount defined by dy
     def move_y(self):
         self.y += self.dy
 
@@ -133,28 +122,41 @@ class Dinosaur:
     def draw_rect(self):
         pygame.draw.rect(screen, [self.x, self.y, self.width, self.height], 0)
 
-    def dino_jump(self):
-        global jump_flag
-        if self.jump_acc <= 13:
-            self.dy = self.jump_acc
-            self.move_y()
-            self.draw_image()
-            pygame.time.delay(15)
-            self.jump_acc += 1
+
+class Dinosaur(Object):
+    DINO_IMAGES = ['Dino_1.png', 'Dino_2.png']
+    jump_flag = False
+
+    def __init__(self, x=20, y=180, dx=0, dy=0, width=30, height=40,
+                 jump_acc=-13, switch_image=0, jump_flag=False):
+        super().__init__(x, y, dx, dy, width, height, Dinosaur.DINO_IMAGES[0])
+        self.jump_acc = jump_acc
+        self.switch_image = switch_image
+        self.jump_flag = jump_flag
+
+    def switch_dino_image(self):
+        self.switch_image = not self.switch_image
+        self.load_image(Dinosaur.DINO_IMAGES[self.switch_image])
+
+    def dino_move(self):
+        if self.jump_flag:
+            if self.jump_acc <= 13:
+                self.dy = self.jump_acc
+                self.move_y()
+                self.draw_image()
+                pygame.time.delay(15)
+                self.jump_acc += 1
+            else:
+                self.jump_flag = False
+                self.jump_acc = -13
         else:
-            jump_flag = False
-            self.jump_acc = -13
-
-    # Check if dino is out of screen boundaries. Might not be needed.
-    # def check_out_of_screen(self):
-    #     if self.x + self.width > 400 or self.x < 0:
-    #         self.x -= self.dx
+            self.draw_image()
 
 
-# Create a dino object
-dino = Dinosaur(20, 180, 0, 0, 30, 40, JUMP_ACC)
+# Create a Dinosaur object
+dino = Dinosaur()
 
-
+# TODO: Just have default values here.
 class Cactus:
     def __init__(self, x, y, dx, dy, width, height, color):
         self.image = ""
@@ -164,7 +166,6 @@ class Cactus:
         self.dy = dy
         self.width = width
         self.height = height
-        self.color = color
 
     # Load Cactus image. Create alpha channel for transparency
     def load_image(self, img):
@@ -185,7 +186,7 @@ class Cactus:
 
     # Draw rectangle instead of image. Used for testing.
     def draw_rect(self):
-        pygame.draw.rect(screen, self.color, [self.x, self.y, self.width, self.height], 0)
+        pygame.draw.rect(screen, [self.x, self.y, self.width, self.height], 0)
 
     # Check if Cactus is out of screen boundaries.
     def check_out_of_screen(self):
@@ -205,12 +206,12 @@ cactus_arr = []
 # maximum of 5 cacti on screen
 cactus_arr_max = 3
 
-
+# TODO: Move to cactus class.
 def reset_cactus_position():
     if len(cactus_arr) > 0:
         cactus_arr.clear()
 
-
+# TODO: Move to cactus class.
 def spawn_cactus_mod():
     if len(cactus_arr) >= cactus_arr_max:
         print("maximum number of cacti on screen")
@@ -237,7 +238,7 @@ def spawn_cactus_mod():
             pass
             # print("previous cactus not traveled far enough")
 
-
+# TODO: Move to cactus class.
 def move_cactus_mod():
     i = 0
     while i < len(cactus_arr):
@@ -255,6 +256,7 @@ def move_cactus_mod():
 # Main loop for game
 while not game_finished:
     # Called whenever there is event.
+    # TODO: Put all this into GameEngine wrapper.
     for event in pygame.event.get():
 
         # User pressed 'X' button to quit.
@@ -269,17 +271,17 @@ while not game_finished:
             first_run = False
             collision = False
             reset_cactus_position()
+            # TODO: Put in reset_dino_position() func
             dino.x = 20
             dino.y = 180
             dino.jump_acc = -13
-            jump_flag = False
-            # NEED TO reset dino position too (because mid-jump)
+            dino.jump_flag = False
             score = 0
             pygame.mouse.set_visible(False)
 
         if event.type == pygame.KEYDOWN and not event_lock:
             if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
-                jump_flag = True
+                dino.jump_flag = True
 
         if event.type == updateScore and not event_lock:
             score += 1
@@ -304,10 +306,7 @@ while not game_finished:
         event_lock = False
         pygame.draw.line(screen, BLACK, (0, 200), (600, 200))  # Draw ground line.
 
-        if jump_flag:
-            dino.dino_jump()
-        else:
-            dino.draw_image()
+        dino.dino_move()
 
         if spawn_counter == 5:
             spawn_cactus_mod()
