@@ -106,8 +106,8 @@ class Object():
         self.width = width
         self.height = height
 
-    def load_image(self, img):
-        self.image = pygame.image.load(img).convert_alpha()
+    def load_image(self, image):
+        self.image = pygame.image.load(image).convert_alpha()
 
     def draw_image(self):
         screen.blit(self.image, [self.x, self.y])
@@ -117,6 +117,8 @@ class Object():
 
     def move_y(self):
         self.y += self.dy
+
+    #TODO: Combine move and draw_image funcs?
 
     # Draw rectangle instead of image. Used for testing.
     def draw_rect(self):
@@ -136,62 +138,38 @@ class Dinosaur(Object):
 
     def switch_dino_image(self):
         self.switch_image = not self.switch_image
-        self.load_image(Dinosaur.DINO_IMAGES[self.switch_image])
+        super().load_image(Dinosaur.DINO_IMAGES[self.switch_image])
 
     def dino_move(self):
         if self.jump_flag:
             if self.jump_acc <= 13:
                 self.dy = self.jump_acc
-                self.move_y()
-                self.draw_image()
+                super().move_y()
+                super().draw_image()
                 pygame.time.delay(15)
                 self.jump_acc += 1
             else:
                 self.jump_flag = False
                 self.jump_acc = -13
         else:
-            self.draw_image()
+            super().draw_image()
 
 
 # Create a Dinosaur object
 dino = Dinosaur()
 
-# TODO: Just have default values here.
-class Cactus:
-    def __init__(self, x, y, dx, dy, width, height, color):
-        self.image = ""
-        self.x = x
-        self.y = y
-        self.dx = dx
-        self.dy = dy
-        self.width = width
-        self.height = height
 
-    # Load Cactus image. Create alpha channel for transparency
-    def load_image(self, img):
-        self.image = pygame.image.load(img).convert_alpha()
-        # self.image.set_colorkey(BLACK)
+class Cactus(Object):
+    def __init__(self, width, height, image, x=600, y=180, dx=-4, dy=0):
+        super().__init__(x, y, dx, dy, width, height, image)
+        
+    # # Check if Cactus is out of screen boundaries.
+    # def check_out_of_screen(self):
+    #     if self.x + self.width > 400 or self.x < 0:
+    #         self.x -= self.dx
 
-    # Used to update the image of the Cactus
-    def draw_image(self):
-        screen.blit(self.image, [self.x, self.y])
-
-    # Move Cactus on x axis by amount defined by dx
-    def move_x(self):
-        self.x += self.dx
-
-    # Move Cactus on y axis by amount defined by dy. Might not be needed.
-    def move_y(self):
-        self.y += self.dy
-
-    # Draw rectangle instead of image. Used for testing.
-    def draw_rect(self):
-        pygame.draw.rect(screen, [self.x, self.y, self.width, self.height], 0)
-
-    # Check if Cactus is out of screen boundaries.
-    def check_out_of_screen(self):
-        if self.x + self.width > 400 or self.x < 0:
-            self.x -= self.dx
+    def move_cactus(self):
+        super().draw_image()
 
 
 ''' Single instance of cactus that produces
@@ -217,22 +195,16 @@ def spawn_cactus_mod():
         print("maximum number of cacti on screen")
     elif not len(cactus_arr):
         print("spawning first cactus")
-        cactus = Cactus(600, 180, -4, 0, 30, 40, OFF_GRAY)
-        cactus.load_image("Cactus.png")
-        cactus.draw_image()
-        # cactus.y = 180
-        # cactus.x = random.randrange(600, 700)
+        cactus = Cactus(30, 40, 'Cactus.png')
+        cactus.move_cactus()
         cactus_arr.append(cactus)
     else:
+        #Check if previous cactus has travelled 10 to 500 units before spawning new cactus, avoids cluttering.
         if cactus_arr[-1].x < random.randint(10, 500):
             print("spawning cactus")
             print("position of previous cactus is {}".format(cactus_arr[-1].x))
-            cactus = Cactus(600, 180, -4, 0, 30, 40, OFF_GRAY)
-            # later, load from array of cactus shapes
-            cactus.load_image("Cactus.png")
-            cactus.draw_image()
-            # cactus.y = 180
-            # cactus.x = 600
+            cactus = Cactus(30, 40, 'Cactus.png')
+            cactus.move_cactus()
             cactus_arr.append(cactus)
         else:
             pass
@@ -245,7 +217,7 @@ def move_cactus_mod():
         # print("moving cactus, current array length is {}".format(len(cactus_arr)))
         # print("position of cactus {} is {}".format(i, cactus_arr[i].x))
         cactus_arr[i].move_x()
-        cactus_arr[i].draw_image()
+        cactus_arr[i].move_cactus()
         if cactus_arr[i].x < 0:
             # print("cactus {} out of bounds, removing from array".format(i))
             cactus_arr.pop(i)
