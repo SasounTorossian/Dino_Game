@@ -58,6 +58,8 @@ updateScore = pygame.USEREVENT
 
 # Cactus spawn interval, Replace with pygame.time.set_timer() at some point
 spawn_counter = 0
+spawnCactus = pygame.USEREVENT+2
+moveCactus = pygame.USEREVENT+3
 
 # # Store speeding up mechanic (Needs to be implemented much later)
 # cactus_speed = [4, 9]
@@ -118,7 +120,9 @@ class Object():
     def move_y(self):
         self.y += self.dy
 
-    #TODO: Combine move and draw_image funcs?
+    def move_asset(self):
+        self.move_x()
+        self.draw_image()
 
     # Draw rectangle instead of image. Used for testing.
     def draw_rect(self):
@@ -162,14 +166,14 @@ dino = Dinosaur()
 class Cactus(Object):
     def __init__(self, width, height, image, x=600, y=180, dx=-4, dy=0):
         super().__init__(x, y, dx, dy, width, height, image)
-        
+
     # # Check if Cactus is out of screen boundaries.
     # def check_out_of_screen(self):
     #     if self.x + self.width > 400 or self.x < 0:
     #         self.x -= self.dx
 
     def move_cactus(self):
-        super().draw_image()
+        super().move_asset()
 
 
 ''' Single instance of cactus that produces
@@ -179,50 +183,51 @@ class Cactus(Object):
     play original, see how often they spawn.
     control spawn rate by semi-randomizing spawn_timer'''
 
+
+# def spawn_cactus():
+#     cactus = Cactus(30, 40, 'Cactus.png')
+#     cactus.move_cactus()  # Would just move once. Needs to be an event.
+
+
 # Setup the enemy cactus (PUT IN FUNC)
 cactus_arr = []
-# maximum of 5 cacti on screen
-cactus_arr_max = 3
 
 # TODO: Move to cactus class.
 def reset_cactus_position():
     if len(cactus_arr) > 0:
         cactus_arr.clear()
 
+
 # TODO: Move to cactus class.
 def spawn_cactus_mod():
-    if len(cactus_arr) >= cactus_arr_max:
-        print("maximum number of cacti on screen")
-    elif not len(cactus_arr):
+    # Can be combined into single. Doesn't need 1st and 2nd
+    if not len(cactus_arr):
         print("spawning first cactus")
         cactus = Cactus(30, 40, 'Cactus.png')
-        cactus.move_cactus()
         cactus_arr.append(cactus)
     else:
-        #Check if previous cactus has travelled 10 to 500 units before spawning new cactus, avoids cluttering.
-        if cactus_arr[-1].x < random.randint(10, 500):
-            print("spawning cactus")
-            print("position of previous cactus is {}".format(cactus_arr[-1].x))
-            cactus = Cactus(30, 40, 'Cactus.png')
-            cactus.move_cactus()
-            cactus_arr.append(cactus)
-        else:
-            pass
-            # print("previous cactus not traveled far enough")
+        print("spawning cactus")
+        cactus = Cactus(30, 40, 'Cactus.png')
+        cactus_arr.append(cactus)
+
 
 # TODO: Move to cactus class.
 def move_cactus_mod():
-    i = 0
-    while i < len(cactus_arr):
-        # print("moving cactus, current array length is {}".format(len(cactus_arr)))
-        # print("position of cactus {} is {}".format(i, cactus_arr[i].x))
-        cactus_arr[i].move_x()
-        cactus_arr[i].move_cactus()
-        if cactus_arr[i].x < 0:
-            # print("cactus {} out of bounds, removing from array".format(i))
+    for i, cacti in enumerate(cactus_arr):
+        cacti.move_cactus()
+        print(cacti.x)
+        if cacti.x < 0:
             cactus_arr.pop(i)
-            # print("new length of array is {}".format(len(cactus_arr)))
-        i += 1
+
+    # i = 0
+    # while i < len(cactus_arr):
+    #     cactus_arr[i].move_cactus()
+    #     if cactus_arr[i].x < 0:
+    #         cactus_arr.pop(i)
+    #     i += 1
+
+
+spawn_time = [500, 700, 1000, 1200, 1500, 1700, 1900, 2300]
 
 
 # Main loop for game
@@ -240,6 +245,9 @@ while not game_finished:
         if (first_run or collision) and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN):
             pygame.time.set_timer(updateScore, 100)
             pygame.time.set_timer(updateDinoImage, 100)
+            pygame.time.set_timer(spawnCactus, 1000)
+            # pygame.time.set_timer(moveCactus, 10)
+            pygame.mouse.set_visible(False)
             first_run = False
             collision = False
             reset_cactus_position()
@@ -249,7 +257,6 @@ while not game_finished:
             dino.jump_acc = -13
             dino.jump_flag = False
             score = 0
-            pygame.mouse.set_visible(False)
 
         if event.type == pygame.KEYDOWN and not event_lock:
             if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
@@ -260,6 +267,10 @@ while not game_finished:
 
         if event.type == updateDinoImage and not event_lock:
             dino.switch_dino_image()
+
+        if event.type == spawnCactus and not event_lock:
+            spawn_cactus_mod()
+            pygame.time.set_timer(spawnCactus, spawn_time[random.randint(0, len(spawn_time)-1)])
 
     # Screen-clearing code goes here
     screen.fill(OFF_WHITE)
@@ -279,14 +290,15 @@ while not game_finished:
         pygame.draw.line(screen, BLACK, (0, 200), (600, 200))  # Draw ground line.
 
         dino.dino_move()
-
-        if spawn_counter == 5:
-            spawn_cactus_mod()
-            spawn_counter = 0
-        else:
-            spawn_counter += 1
-
         move_cactus_mod()
+
+        # if spawn_counter == 5:
+        #     spawn_cactus_mod()
+        #     spawn_counter = 0
+        # else:
+        #     spawn_counter += 1
+
+        
 
         #  Check the collision of the dino with the cactus
         collision = check_collision()
