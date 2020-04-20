@@ -1,14 +1,13 @@
 import random
 import pygame
-from itertools import cycle
 
 # TODO: Organize files into folder (assets)
 # TODO: Organize GUI into single class? (online examples) (Inherit from GameEngine)
 # TODO: Game engine wrapper class for handling
-# TODO: Make use of @classmethod and @staticmethod
-# TODO: Clean up methods. Put into Cactus or Dinosaur class
 # TODO: Clean up globals. Put into GUI or GameEngine class
 # TODO: After Refactor, figure out new features.
+# TODO: Expand screen size?
+# TODO: Open in center of screen?
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -65,6 +64,7 @@ moveCactus = pygame.USEREVENT+3
 # cactus_speed = [4, 9]
 # score_speed_threshold = 50
 
+
 # TODO: Put all into GUI class. Different screens will inherit?
 def draw_main_menu():
     screen.blit(text_title, [SIZE[0] / 2 - 130, SIZE[1] / 2 - 100])
@@ -86,7 +86,8 @@ def draw_score():
         txt_score = font_20.render(str(score).zfill(5), True, OFF_GRAY)
         screen.blit(txt_score, [530, 15])
 
-# TODO: Move this to class (as @classmethod ?)
+
+# TODO: Move this to class (as @classmethod ?) (Part of Object class. check children)
 def check_collision():
     for i in range(len(cactus_arr)):
         if (dino.x + dino.width > cactus_arr[i].x) and \
@@ -120,6 +121,7 @@ class Object():
     def move_y(self):
         self.y += self.dy
 
+    # TODO: Not applicable to Dino class.
     def move_asset(self):
         self.move_x()
         self.draw_image()
@@ -130,19 +132,18 @@ class Object():
 
 
 class Dinosaur(Object):
-    DINO_IMAGES = ['Dino_1.png', 'Dino_2.png']
-    jump_flag = False
+    dino_images = ['Dino_1.png', 'Dino_2.png']
 
     def __init__(self, x=20, y=180, dx=0, dy=0, width=30, height=40,
                  jump_acc=-13, switch_image=0, jump_flag=False):
-        super().__init__(x, y, dx, dy, width, height, Dinosaur.DINO_IMAGES[0])
+        super().__init__(x, y, dx, dy, width, height, Dinosaur.dino_images[0])
         self.jump_acc = jump_acc
         self.switch_image = switch_image
         self.jump_flag = jump_flag
 
     def switch_dino_image(self):
         self.switch_image = not self.switch_image
-        super().load_image(Dinosaur.DINO_IMAGES[self.switch_image])
+        super().load_image(Dinosaur.dino_images[self.switch_image])
 
     def dino_move(self):
         if self.jump_flag:
@@ -164,71 +165,34 @@ dino = Dinosaur()
 
 
 class Cactus(Object):
+    spawn_time = [500, 700, 1000, 1200, 1500, 1700, 1900, 2300]
+
     def __init__(self, width, height, image, x=600, y=180, dx=-4, dy=0):
         super().__init__(x, y, dx, dy, width, height, image)
 
-    # # Check if Cactus is out of screen boundaries.
-    # def check_out_of_screen(self):
-    #     if self.x + self.width > 400 or self.x < 0:
-    #         self.x -= self.dx
-
-    def move_cactus(self):
+    def move_cactus_asset(self):
         super().move_asset()
 
+    @classmethod
+    def reset_cactus_position(cls, cactus_arr):
+        if len(cactus_arr) > 0:
+            cactus_arr.clear()
 
-''' Single instance of cactus that produces
-    cacti clones which go across the screen.
-    can be a timer event like the score.
-    list of cactus images, of different size
-    play original, see how often they spawn.
-    control spawn rate by semi-randomizing spawn_timer'''
+    @classmethod
+    def spawn_cactus(cls, cactus_arr):
+        cactus = Cactus(30, 40, 'Cactus.png')
+        cactus_arr.append(cactus)
+
+    # TODO: Review later.
+    @classmethod
+    def move_cactus(cls, cactus_arr):
+        for i, cacti in enumerate(cactus_arr):
+            cacti.move_cactus_asset()
+            if cacti.x < 0:
+                cactus_arr.pop(i)
 
 
-# def spawn_cactus():
-#     cactus = Cactus(30, 40, 'Cactus.png')
-#     cactus.move_cactus()  # Would just move once. Needs to be an event.
-
-
-# Setup the enemy cactus (PUT IN FUNC)
 cactus_arr = []
-
-# TODO: Move to cactus class.
-def reset_cactus_position():
-    if len(cactus_arr) > 0:
-        cactus_arr.clear()
-
-
-# TODO: Move to cactus class.
-def spawn_cactus_mod():
-    # Can be combined into single. Doesn't need 1st and 2nd
-    if not len(cactus_arr):
-        print("spawning first cactus")
-        cactus = Cactus(30, 40, 'Cactus.png')
-        cactus_arr.append(cactus)
-    else:
-        print("spawning cactus")
-        cactus = Cactus(30, 40, 'Cactus.png')
-        cactus_arr.append(cactus)
-
-
-# TODO: Move to cactus class.
-def move_cactus_mod():
-    for i, cacti in enumerate(cactus_arr):
-        cacti.move_cactus()
-        print(cacti.x)
-        if cacti.x < 0:
-            cactus_arr.pop(i)
-
-    # i = 0
-    # while i < len(cactus_arr):
-    #     cactus_arr[i].move_cactus()
-    #     if cactus_arr[i].x < 0:
-    #         cactus_arr.pop(i)
-    #     i += 1
-
-
-spawn_time = [500, 700, 1000, 1200, 1500, 1700, 1900, 2300]
-
 
 # Main loop for game
 while not game_finished:
@@ -246,11 +210,10 @@ while not game_finished:
             pygame.time.set_timer(updateScore, 100)
             pygame.time.set_timer(updateDinoImage, 100)
             pygame.time.set_timer(spawnCactus, 1000)
-            # pygame.time.set_timer(moveCactus, 10)
             pygame.mouse.set_visible(False)
             first_run = False
             collision = False
-            reset_cactus_position()
+            Cactus.reset_cactus_position(cactus_arr)
             # TODO: Put in reset_dino_position() func
             dino.x = 20
             dino.y = 180
@@ -269,8 +232,8 @@ while not game_finished:
             dino.switch_dino_image()
 
         if event.type == spawnCactus and not event_lock:
-            spawn_cactus_mod()
-            pygame.time.set_timer(spawnCactus, spawn_time[random.randint(0, len(spawn_time)-1)])
+            Cactus.spawn_cactus(cactus_arr)
+            pygame.time.set_timer(spawnCactus, Cactus.spawn_time[random.randint(0, len(Cactus.spawn_time)-1)])
 
     # Screen-clearing code goes here
     screen.fill(OFF_WHITE)
@@ -290,17 +253,8 @@ while not game_finished:
         pygame.draw.line(screen, BLACK, (0, 200), (600, 200))  # Draw ground line.
 
         dino.dino_move()
-        move_cactus_mod()
+        Cactus.move_cactus(cactus_arr)
 
-        # if spawn_counter == 5:
-        #     spawn_cactus_mod()
-        #     spawn_counter = 0
-        # else:
-        #     spawn_counter += 1
-
-        
-
-        #  Check the collision of the dino with the cactus
         collision = check_collision()
 
         # Draw the score.
