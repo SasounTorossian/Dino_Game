@@ -87,18 +87,6 @@ def draw_score():
         screen.blit(txt_score, [530, 15])
 
 
-# TODO: Move this to class (as @classmethod ?) (Part of Object class. check children)
-def check_collision():
-    for i in range(len(cactus_arr)):
-        if (dino.x + dino.width > cactus_arr[i].x) and \
-                (dino.x < cactus_arr[i].x + cactus_arr[i].width) and \
-                (dino.y < cactus_arr[i].y + cactus_arr[i].height) and \
-                (dino.y + dino.height > cactus_arr[i].y):
-            return True
-        else:
-            return False
-
-
 class Object():
     def __init__(self, x, y, dx, dy, width, height, image):
         self.image = pygame.image.load(image).convert_alpha()
@@ -129,6 +117,16 @@ class Object():
     # Draw rectangle instead of image. Used for testing.
     def draw_rect(self):
         pygame.draw.rect(screen, [self.x, self.y, self.width, self.height], 0)
+
+    @classmethod
+    def check_collision(cls, dino, cactus_arr):
+        for i in range(len(cactus_arr)):
+            if (dino.x + dino.width > cactus_arr[i].x) and \
+                    (dino.x < cactus_arr[i].x + cactus_arr[i].width) and \
+                    (dino.y < cactus_arr[i].y + cactus_arr[i].height) and \
+                    (dino.y + dino.height > cactus_arr[i].y):
+                return True
+            return False
 
 
 class Dinosaur(Object):
@@ -255,7 +253,7 @@ while not game_finished:
         dino.dino_move()
         Cactus.move_cactus(cactus_arr)
 
-        collision = check_collision()
+        collision = Object.check_collision(dino, cactus_arr)
 
         # Draw the score.
         draw_score()
