@@ -121,9 +121,9 @@ class Object():
     def move_y(self):
         self.y += self.dy
 
-    # TODO: Not applicable to Dino class.
     def move_asset(self):
         self.move_x()
+        self.move_y()
         self.draw_image()
 
     # Draw rectangle instead of image. Used for testing.
@@ -141,23 +141,29 @@ class Dinosaur(Object):
         self.switch_image = switch_image
         self.jump_flag = jump_flag
 
+    def reset_dino_position(self):
+        self.x = 20
+        self.y = 180
+        self.jump_acc = -13
+        self.jump_flag = False
+        self.dy = 0
+
     def switch_dino_image(self):
         self.switch_image = not self.switch_image
         super().load_image(Dinosaur.dino_images[self.switch_image])
 
+    # TODO: HAS to be a better/nicer way of doing this.
     def dino_move(self):
         if self.jump_flag:
             if self.jump_acc <= 13:
                 self.dy = self.jump_acc
-                super().move_y()
-                super().draw_image()
-                pygame.time.delay(15)
                 self.jump_acc += 1
             else:
                 self.jump_flag = False
+                self.dy = 0
                 self.jump_acc = -13
-        else:
-            super().draw_image()
+
+        super().move_asset()
 
 
 # Create a Dinosaur object
@@ -169,9 +175,6 @@ class Cactus(Object):
 
     def __init__(self, width, height, image, x=600, y=180, dx=-4, dy=0):
         super().__init__(x, y, dx, dy, width, height, image)
-
-    def move_cactus_asset(self):
-        super().move_asset()
 
     @classmethod
     def reset_cactus_position(cls, cactus_arr):
@@ -187,11 +190,12 @@ class Cactus(Object):
     @classmethod
     def move_cactus(cls, cactus_arr):
         for i, cacti in enumerate(cactus_arr):
-            cacti.move_cactus_asset()
+            super(Cactus, cacti).move_asset()
             if cacti.x < 0:
                 cactus_arr.pop(i)
 
 
+# Create cactus array to store Cactus class instances
 cactus_arr = []
 
 # Main loop for game
@@ -213,13 +217,9 @@ while not game_finished:
             pygame.mouse.set_visible(False)
             first_run = False
             collision = False
-            Cactus.reset_cactus_position(cactus_arr)
-            # TODO: Put in reset_dino_position() func
-            dino.x = 20
-            dino.y = 180
-            dino.jump_acc = -13
-            dino.jump_flag = False
             score = 0
+            Cactus.reset_cactus_position(cactus_arr)
+            dino.reset_dino_position()
 
         if event.type == pygame.KEYDOWN and not event_lock:
             if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
