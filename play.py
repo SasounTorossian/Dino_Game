@@ -39,30 +39,17 @@ pygame.display.set_caption("Dino Jump")
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-# Game flow variables
-game_finished = False
-collision = False
-# TODO: Why not just use collision flag
-first_run = True  # Indicates if game is being run for first time
-# Used to lock other events while in main menu
-event_lock = True  # Come up with better solution.
-
-# Dino image list for walking. Add animation when dino collides.
-updateDinoImage = pygame.USEREVENT+1
+collision = True
 
 # Score variables
 score = 0
 hi_score = 0
-updateScore = pygame.USEREVENT
 
-# Cactus spawn interval, Replace with pygame.time.set_timer() at some point
-spawn_counter = 0
+# pygame userevents
+updateScore = pygame.USEREVENT
+updateDinoImage = pygame.USEREVENT+1
 spawnCactus = pygame.USEREVENT+2
 moveCactus = pygame.USEREVENT+3
-
-# # Store speeding up mechanic (Needs to be implemented much later)
-# cactus_speed = [4, 9]
-# score_speed_threshold = 50
 
 
 # TODO: Put all into GUI class. Different screens will inherit?
@@ -132,12 +119,11 @@ class Object():
 class Dinosaur(Object):
     dino_images = ['Dino_1.png', 'Dino_2.png']
 
-    def __init__(self, x=20, y=180, dx=0, dy=0, width=30, height=40,
-                 jump_acc=-13, switch_image=0, jump_flag=False):
+    def __init__(self, x=20, y=180, dx=0, dy=0, width=30, height=40):
         super().__init__(x, y, dx, dy, width, height, Dinosaur.dino_images[0])
-        self.jump_acc = jump_acc
-        self.switch_image = switch_image
-        self.jump_flag = jump_flag
+        self.jump_acc = -13
+        self.switch_image = 0
+        self.jump_flag = False
 
     def reset_dino_position(self):
         self.x = 20
@@ -197,7 +183,7 @@ class Cactus(Object):
 cactus_arr = []
 
 # Main loop for game
-while not game_finished:
+while True:
     # Called whenever there is event.
     # TODO: Put all this into GameEngine wrapper.
     for event in pygame.event.get():
@@ -205,31 +191,30 @@ while not game_finished:
         # User pressed 'X' button to quit.
         # Allows program to exit while and safely quit program
         if event.type == pygame.QUIT:
-            game_finished = True
+            pygame.quit()
 
         # Reset everything when the user starts the game, or when they crash
-        if (first_run or collision) and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN):
-            pygame.time.set_timer(updateScore, 100)
-            pygame.time.set_timer(updateDinoImage, 100)
-            pygame.time.set_timer(spawnCactus, 1000)
-            pygame.mouse.set_visible(False)
-            first_run = False
-            collision = False
-            score = 0
-            Cactus.reset_cactus_position(cactus_arr)
-            dino.reset_dino_position()
+        if event.type == pygame.KEYDOWN:
+            if collision:
+                pygame.time.set_timer(updateScore, 100)
+                pygame.time.set_timer(updateDinoImage, 100)
+                pygame.time.set_timer(spawnCactus, 1000)
+                pygame.mouse.set_visible(False)
+                collision = False
+                score = 0
+                Cactus.reset_cactus_position(cactus_arr)
+                dino.reset_dino_position()
+            else:
+                if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
+                    dino.jump_flag = True
 
-        if event.type == pygame.KEYDOWN and not event_lock:
-            if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
-                dino.jump_flag = True
-
-        if event.type == updateScore and not event_lock:
+        if event.type == updateScore:
             score += 1
 
-        if event.type == updateDinoImage and not event_lock:
+        if event.type == updateDinoImage:
             dino.switch_dino_image()
 
-        if event.type == spawnCactus and not event_lock:
+        if event.type == spawnCactus:
             Cactus.spawn_cactus(cactus_arr)
             pygame.time.set_timer(spawnCactus, Cactus.spawn_time[random.randint(0, len(Cactus.spawn_time)-1)])
 
@@ -237,7 +222,7 @@ while not game_finished:
     screen.fill(OFF_WHITE)
 
     # Drawing code should go here
-    if first_run or collision:
+    if collision:
         event_lock = True
         pygame.mouse.set_visible(True)
         pygame.time.set_timer(updateScore, 0)  # Stop score timer
@@ -263,6 +248,3 @@ while not game_finished:
 
     # --- Limit to 60 frames per second
     clock.tick(60)
-
-# Close the window and quit.
-pygame.quit()
